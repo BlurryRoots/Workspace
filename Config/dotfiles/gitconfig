@@ -1,0 +1,36 @@
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+
+[alias]
+	mg = merge --no-ff
+	r = remote
+	d = difftool --no-prompt
+	e = config -e
+	c = checkout
+	cb = checkout -b
+	a = add -v
+	af = add -vf
+	rmc = rm -r --cached
+	m = commit -m
+	ma = commit --amend
+	mam = commit --amend -m
+	s = status -bs
+	b = branch
+	pl = pull
+	p = push
+	po = push -u origin
+	poa = push -u origin --all
+	l  = log --color	
+	la = log --graph --color --abbrev-commit --all
+	lav = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --all
+	hard = reset --hard
+	type = cat-file -t
+	dump = cat-file
+
+[merge]
+	tool = meld
+
+[diff]
+	tool = meld

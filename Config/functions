@@ -1,0 +1,119 @@
+#!/bin/bash
+
+#
+rechen () {
+	[ $# -ne 1 ] && {
+		echo "just one string with calculation pleazz!"
+		exit 1
+	}
+
+	local stuff="scale=2; $1"
+
+	echo $stuff | bc
+}
+
+#
+drossel () {
+	[ $# -ne 2 ] && {
+		echo "nöööööö"
+		exit 1
+	}
+
+	local iface="$1"
+	local speed="$2"
+
+	which wondershaper > /dev/null && {
+		sudo wondershaper clear && \
+		sudo wondershaper "$iface" "${speed}0" "${speed}0"
+	} || {
+		exit 1
+	}
+}
+
+#
+find_string () {
+	[ $# -ne 2 ] && {
+		echo "usage: find_string <directory> <searchstring>"
+		return 1
+	}
+
+	find "$1" -type f | xargs -I{} fgrep --color=always -Hno "$2" "{}"
+
+	return 0
+}
+
+#
+show_connections () {
+	sudo netstat -natp
+}
+
+#
+find_here () {
+	find . -iname "$1"
+}
+
+#
+who_uses_port () {
+	local port=$1
+
+	lsof -Pnl +M -i4 | grep ":$port"
+
+	[ $? -eq 1 ] && {
+		echo "nobody uses port "$port
+	}
+}
+
+# brighter
+brighter () {
+	local loc=/sys/class/backlight/acpi_video0/brightness
+	local level
+
+	[ "$#" = "0" ] && {
+		level=`cat $loc`
+		echo $level
+	} || {
+		su -c "echo $1 > $loc"
+	}
+}
+
+# frontend for rsync
+netcp () {
+	local user="$1"
+	local addr="$2"
+	local port="$3"
+	local src="$4"
+	local dst="$5"
+
+	rsync -aP -e "ssh -p$port" "$user@$addr:$src" "$dst"
+}
+
+# ex - archive extractor
+# usage: ex <file>
+ex () {
+	if [ -f $1 ] ; then
+		case $1 in
+			*.tar.bz2)   tar xjf $1   ;;
+			*.tar.gz)    tar xzf $1   ;;
+			*.bz2)       bunzip2 $1   ;;
+			*.rar)       unrar x $1   ;;
+			*.gz)        gunzip $1    ;;
+			*.tar)       tar xf $1    ;;
+			*.tbz2)      tar xjf $1   ;;
+			*.tgz)       tar xzf $1   ;;
+			*.zip)       unzip $1     ;;
+			*.Z)         uncompress $1;;
+			*.7z)        7z x $1      ;;
+			*)           echo "'$1' cannot be extracted via ex()" ;;
+		esac
+	else
+		echo "'$1' is not a valid file"
+	fi
+}
+
+cleanup_caches () {
+	rm -rf ~/.thumbnails
+	mkdir -p ~/.thumbnails
+
+	rm -rf ~/.cache
+	mkdir -p ~/.cache
+}

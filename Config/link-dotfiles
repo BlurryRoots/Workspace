@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ ! -e $HOME/.i3 ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/i3 $HOME/.i3 
+fi
+
+if [ ! -e $HOME/.Xresources ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/Xresources $HOME/.Xresources
+fi
+
+if [ ! -e $HOME/.bash_logout ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/bash_logout $HOME/.bash_logout
+fi
+
+if [ ! -e $HOME/.bashrc ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/bashrc $HOME/.bashrc
+fi
+
+if [ ! -e $HOME/.dmrc ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/dmrc $HOME/.dmrc
+fi
+
+if [ ! -e $HOME/.gitconfig ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/gitconfig $HOME/.gitconfig
+fi
+
+if [ ! -e $HOME/.profile ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/profile $HOME/.profile
+fi
+
+if [ ! -e $HOME/.zshrc ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/zshrc $HOME/.zshrc
+fi
