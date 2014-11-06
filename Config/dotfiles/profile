@@ -11,7 +11,7 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 
 # load custom configuration
-if [ ! -e CONFIGURATION_LOADED ]; then
-	source $HOME/Workspace/Config/oninit
-fi
+#if [ ! -e CONFIGURATION_LOADED ]; then
+#	source $HOME/Workspace/Config/oninit
+#fi
 	
