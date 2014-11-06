@@ -24,3 +24,5 @@ xset -dpms
 synclient HorizTwoFingerScroll=1
 synclient ClickFinger3=2
 synclient TapButton3=2
+
+setopt interactivecomments
