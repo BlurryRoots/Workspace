@@ -1,10 +1,20 @@
 #!/bin/bash
 
+open_pdf () {
+	if [ $# -ne 1 ]; then
+		echo "no file given!"
+		return 1
+	fi
+
+	# double fork it !!!
+	(mupdf "$1" &) &
+}
+
 #
-rechen () {
+calc () {
 	[ $# -ne 1 ] && {
 		echo "just one string with calculation pleazz!"
-		exit 1
+		return 1
 	}
 
 	local stuff="scale=2; $1"
@@ -16,7 +26,7 @@ rechen () {
 drossel () {
 	[ $# -ne 2 ] && {
 		echo "nöööööö"
-		exit 1
+		return 1
 	}
 
 	local iface="$1"
