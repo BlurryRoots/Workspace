@@ -31,3 +31,7 @@ fi
 if [ ! -e $HOME/.zshrc ]; then
 	ln -s $CONFIGURATION_PATH/dotfiles/zshrc $HOME/.zshrc
 fi
+
+if [ ! -e $HOME/.vimrc ]; then
+	ln -s $CONFIGURATION_PATH/dotfiles/vimrc $HOME/.vimrc
+fi
