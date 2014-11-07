@@ -1,1 +1,36 @@
-# where do i hook this in?
+#!/bin/bash
+
+# entry point
+
+# change this to your liking
+export CONFIGURATION_PATH="$HOME/Workspace/Config"
+
+# set guard
+export CONFIGURATION_LOADED=yes
+
+# define function to reinitialize
+configuration_load () {
+	# setup dotfiles
+	source "$CONFIGURATION_PATH/link-dotfiles"
+
+	# setup options
+	source "$CONFIGURATION_PATH/options"
+
+	# setup aliases
+	source "$CONFIGURATION_PATH/aliases"
+
+	# setup exports
+	source "$CONFIGURATION_PATH/exports"
+
+	# setup helper functions
+	source "$CONFIGURATION_PATH/functions"
+
+	# import additional functionality
+	source "$CONFIGURATION_PATH/imports"
+
+	# setup custom keyboard layout
+	source "$CONFIGURATION_PATH/keyboard-layout"
+}
+
+# and call it
+configuration_load

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ ! -e /tmp/config/key.lock ]; then
+	echo "setting keylayout"
+	mkdir -p /tmp/config
+	echo "de nodeadkeys" > /tmp/config/key.lock
+
+	setxkbmap de nodeadkeys
+fi
+
