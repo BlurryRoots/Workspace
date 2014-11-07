@@ -13,15 +13,6 @@ alias dusch='du -sch'
 # show sizes in MB
 alias free='free -m'
 
-<<<<<<< HEAD
-=======
-# grepping with color
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-
->>>>>>> origin/master
-#alias orphans='pacman -Qdt'
 alias uuidof='blkid'
 alias xsetstatus='xset q | grep -A1 -i dpms'
 alias fh='find_here'
@@ -31,20 +22,8 @@ alias tor='$HOME/Applications/Tor-Browser/./start-tor-browser'
 alias checkout='$HOME/Workspace/Scripts/./checkout.sh'
 alias yt-mpv='$HOME/Workspace/Script/./yt-mpv.sh'
 
-# docker
-<<<<<<< HEAD
-alias sucker="sudo docker.io"
-
-# dropbox
-alias dp="sudo $HOME/Applications/Dropbox/./dropbox.py"
-=======
 alias sucker="sudo docker"
 alias erlang-vm="sucker run -Pti -v ~/Workspace/Remote/haw/vsp:/src erlang-vm /bin/bash"
 
 # dropbox
 alias dp="sudo $HOME/Applications/Dropbox/./dropbox.py"
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
->>>>>>> origin/master
