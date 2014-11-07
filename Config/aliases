@@ -1,0 +1,30 @@
+# aliases
+
+# nicer ls
+alias ls='ls --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
+alias ll='ls -lh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
+alias la='ls -lah --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
+# confirm before overwriting something
+alias cp="cp -viRp"
+# human-readable sizes
+alias df='df -h'
+# measuring
+alias dusch='du -sch'
+# show sizes in MB
+alias free='free -m'
+
+#alias orphans='pacman -Qdt'
+alias uuidof='blkid'
+alias xsetstatus='xset q | grep -A1 -i dpms'
+alias fh='find_here'
+
+alias tor='$HOME/Applications/Tor-Browser/./start-tor-browser'
+
+alias checkout='$HOME/Workspace/Scripts/./checkout.sh'
+alias yt-mpv='$HOME/Workspace/Script/./yt-mpv.sh'
+
+# docker
+alias sucker="sudo docker.io"
+
+# dropbox
+alias dp="sudo $HOME/Applications/Dropbox/./dropbox.py"

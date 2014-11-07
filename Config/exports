@@ -1,0 +1,16 @@
+# export variables
+
+# ssh
+export SSH_KEY_PATH="$HOME/.ssh/dsa_id"
+
+# path
+export PATH=/usr/local/bin:$PATH
+
+# nano for non visual editing
+export EDITOR="nano"
+# define sublime text as default editor
+export VISUAL="subl"
+
+export SHELL="/usr/bin/fish"
+
+export BROWSER="/bin/firefox"

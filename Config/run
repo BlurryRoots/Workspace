@@ -1,0 +1,16 @@
+# entry point
+
+# setup options
+source options
+
+# setup aliases
+source aliases
+
+# setup exports
+source exports
+
+# setup helper functions
+source functions
+
+# import additional functionality
+source imports

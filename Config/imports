@@ -1,0 +1,6 @@
+# import additional functionality
+
+# asdf
+cd $HOME/Workspace/Scripts/paket
+source paket.sh
+cd ~ > /dev/null
