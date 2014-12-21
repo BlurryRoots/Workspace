@@ -28,9 +28,3 @@
 	hard = reset --hard
 	type = cat-file -t
 	dump = cat-file
-
-[merge]
-	tool = meld
-
-[diff]
-	tool = meld
