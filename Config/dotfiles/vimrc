@@ -20,6 +20,9 @@ set listchars=tab:▸\ ,trail:·,nbsp:·
 " show 80 column line
 set colorcolumn=80
 
+" Highlight characters in lines longer than 80 chars
+match ErrorMsg '\%>80v.\+'
+
 " indentation
 set autoindent
 set noexpandtab
