@@ -92,3 +92,32 @@ cleanup_caches () {
 	rm -rf ~/.cache
 	mkdir -p ~/.cache
 }
+
+#
+git-exterminate () {
+	if [ "$1" = "" ]; then
+		echo "You have to specifiy the path of the file to destroy!"
+		exit
+	fi
+
+	echo "This will delete all references of $1!"
+	echo "Please back up your data, before running this command!"
+	echo "Continue?[y/n] > "
+
+	read cont
+
+	if [ "$cont" = "y" ]; then
+		git filter-branch --force \
+		--index-filter "git rm --cached --ignore-unmatch $1" \
+		--prune-empty --tag-name-filter cat -- --all
+
+		if [ $? -ne 0 ]; then
+			echo "Something went wrong!"
+		else
+			echo "You rewrote history! Be proud of yourself!"
+		fi
+	else
+		echo "Ending without rewrite."
+	fi
+}
+
