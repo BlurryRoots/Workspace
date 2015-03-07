@@ -12,6 +12,8 @@ alias df='df -h'
 alias dusch='du -sch'
 # show sizes in MB
 alias free='free -m'
+# remove stuff recursivly
+alias rr='rm -r'
 
 # grepping with color
 alias grep='grep --color=auto'
