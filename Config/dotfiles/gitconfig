@@ -13,6 +13,7 @@
 	a = add -v
 	af = add -vf
 	rmc = rm -r --cached
+	o = commit
 	m = commit -m
 	ma = commit --amend
 	mam = commit --amend -m
@@ -22,15 +23,11 @@
 	p = push
 	po = push -u origin
 	poa = push -u origin --all
-	l  = log --color	
+	l  = log --color
 	la = log --graph --color --abbrev-commit --all
 	lav = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --all
 	hard = reset --hard
 	type = cat-file -t
 	dump = cat-file
-
-[merge]
-	tool = meld
-
-[diff]
-	tool = meld
+[core]
+	editor = subl -a -w
