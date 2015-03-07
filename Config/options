@@ -20,4 +20,6 @@ xset s 0 0
 xset s noblank
 xset -dpms
 
+# set to let the shell accept hashes as comments
 setopt interactivecomments
+
