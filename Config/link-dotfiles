@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ ! -e $HOME/.i3 ]; then
-	ln -s $CONFIGURATION_PATH/dotfiles/i3 $HOME/.i3 
-fi
-
 if [ ! -e $HOME/.Xresources ]; then
 	ln -s $CONFIGURATION_PATH/dotfiles/Xresources $HOME/.Xresources
 fi
