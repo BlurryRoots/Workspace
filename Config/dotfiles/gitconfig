@@ -18,6 +18,7 @@
 	mam = commit --amend -m
 	s = status -bs
 	b = branch
+	ba = branch -a
 	pl = pull
 	p = push
 	po = push -u origin

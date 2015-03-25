@@ -27,9 +27,6 @@ configuration_load () {
 
 	# import additional functionality
 	source "$CONFIGURATION_PATH/imports"
-
-	# setup custom keyboard layout
-	source "$CONFIGURATION_PATH/keyboard-layout"
 }
 
 # and call it
