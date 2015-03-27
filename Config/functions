@@ -121,3 +121,7 @@ git-exterminate () {
 	fi
 }
 
+#
+top_biggies () {
+	du -h * | sort -rn | head -11
+}
