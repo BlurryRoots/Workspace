@@ -1,9 +1,9 @@
 # aliases
 
 # nicer ls
-alias ls='ls --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
 alias ll='ls -lh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
-alias la='ls -lah --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
+alias lav='ls -lAh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
+alias la='ls -1hs --group-directories-first --color=auto -F'
 # confirm before overwriting something
 alias cp="cp -viRp"
 # human-readable sizes
