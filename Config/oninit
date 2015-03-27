@@ -9,7 +9,7 @@ export CONFIGURATION_PATH="$HOME/Workspace/Config"
 export CONFIGURATION_LOADED=yes
 
 # define function to reinitialize
-configuration_load () {
+workspace_config_load () {
 	# setup dotfiles
 	source "$CONFIGURATION_PATH/link-dotfiles"
 
@@ -27,10 +27,7 @@ configuration_load () {
 
 	# import additional functionality
 	source "$CONFIGURATION_PATH/imports"
-
-	# setup custom keyboard layout
-	source "$CONFIGURATION_PATH/keyboard-layout"
 }
 
 # and call it
-configuration_load
+workspace_config_load
