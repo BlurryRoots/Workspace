@@ -23,9 +23,11 @@
 	p = push
 	po = push -u origin
 	poa = push -u origin --all
-	l  = log --color	
+	l  = log --color
 	la = log --graph --color --abbrev-commit --all
 	lav = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --all
 	hard = reset --hard
 	type = cat-file -t
 	dump = cat-file
+[core]
+	editor = subl -a -w
