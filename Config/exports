@@ -1,21 +1,30 @@
 # export variables
 
 # extend path
-[ -e $HOME/Workspace/Binaries ] && {
-	export PATH="$HOME/Workspace/Binaries:/usr/local/bin:$PATH"	
-}
+if [ -e /usr/local/bin ]; then
+	export PATH="/usr/local/bin:$PATH"
+fi
+
+if [ -e $HOME/Workspace/Binaries ]; then
+	export PATH="$HOME/Workspace/Binaries:$PATH"
+fi
 
 # android stuff
-ANDROID_HOME=/opt/android-sdk-linux
-PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
+if [ -e /opt/android-sdk-linux ]; then
+	export ANDROID_HOME=/opt/android-sdk-linux
+	export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
+fi
 
 # set shell
-export SHELL="/usr/bin/zsh"
+if [ -n "$SHELL" ]; then
+	export DEFAULT_SHELL="$SHELL"
+fi
+export SHELL=`which zsh`
 
-# nano for non visual editing
-export EDITOR="nano"
+# vim for non visual editing
+export EDITOR="vim"
 # define sublime text as default editor
 export VISUAL="subl"
 
 # set browser
-export BROWSER="/bin/firefox"
+export BROWSER=`which firefox`
