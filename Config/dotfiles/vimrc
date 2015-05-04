@@ -69,6 +69,7 @@ Plugin 'terryma/vim-multiple-cursors'
 Plugin 'godlygeek/tabular'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'ekalinin/Dockerfile.vim'
+Plugin 'adimit/prolog.vim'
 
 call vundle#end()            " required
 filetype plugin indent on    " required
