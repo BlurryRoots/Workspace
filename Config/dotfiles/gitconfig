@@ -6,7 +6,9 @@
 [alias]
 	mg = merge --no-ff
 	r = remote
-	d = difftool --no-prompt
+	d = diff
+	ds = diff --staged
+	dt = difftool --no-prompt
 	e = config -e
 	c = checkout
 	cb = checkout -b
