@@ -135,12 +135,12 @@ cleanup_caches () {
 
 #
 top_biggies () {
-	local search_path
+	local search_path="$1"
 	if ((0 == $#)); then
 		search_path=./
 	fi
 
-	du -h $search_path | sort -rh | head -11
+	du -h "$search_path" | sort -rh | head -11
 }
 
 #
