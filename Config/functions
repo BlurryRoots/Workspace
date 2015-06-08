@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# control which app gets started on which workspace
+# gsettings set \
+# 	org.gnome.shell.extensions.auto-move-windows application-list \
+# 		"['firefox.desktop:2','banshee.desktop:3','thunderbird.desktop:4']"
+
 open_pdf () {
 	if [ $# -ne 1 ]; then
 		echo "no file given!"
@@ -130,7 +135,12 @@ cleanup_caches () {
 
 #
 top_biggies () {
-	du -h * | sort -rn | head -11
+	local search_path
+	if ((0 == $#)); then
+		search_path=./
+	fi
+
+	du -h $search_path | sort -rh | head -11
 }
 
 #
