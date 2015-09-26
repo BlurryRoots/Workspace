@@ -1,5 +1,8 @@
 # aliases
 
+# open files
+alias o='xdg-open'
+
 # nicer ls
 alias ll='ls -lh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
 alias lav='ls -lAh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
@@ -37,7 +40,7 @@ alias erlang-vm="sucker run -Pti -v ~/Workspace/Remote/haw/vsp:/src erlang-vm /b
 # dropbox
 alias dp="sudo $HOME/Applications/Dropbox/./dropbox.py"
 
-# equal rights !!!
+# equal rights !!! xD
 alias woman='man'
 
 alias pm="sudo pacman --color always"

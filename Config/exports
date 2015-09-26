@@ -15,6 +15,11 @@ if [ -e /opt/android-sdk-linux ]; then
 	export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
 fi
 
+# google app engine stuff
+if [ -e $HOME/Workspace/Libraries/google-app-engine-python ]; then
+	export PATH="$HOME/Workspace/Libraries/google-app-engine-python:$PATH"
+fi
+
 # set shell
 if [ -n "$SHELL" ]; then
 	export DEFAULT_SHELL="$SHELL"
