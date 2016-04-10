@@ -8,6 +8,16 @@ export CONFIGURATION_PATH="$HOME/Workspace/Config"
 # set guard
 export CONFIGURATION_LOADED=yes
 
+workspace_config_plugin () {
+	if ((1 != $#)); then
+		echo "no plugin name provided"
+		return 1
+	fi
+
+	(cd "$CONFIGURATION_PATH/plugins/$1" && ./run)
+	return 0
+}
+
 # define function to reinitialize
 workspace_config_load () {
 	# setup dotfiles
