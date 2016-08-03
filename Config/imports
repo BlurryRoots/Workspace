@@ -4,9 +4,3 @@
 
 # paket tool
 source ~/Workspace/Scripts/paket/setup.sh
-
-# battery util
-source ~/Workspace/Scripts/battery/setup.sh
-
-# package manager
-source ~/Workspace/Scripts/h3pkg/main.sh
