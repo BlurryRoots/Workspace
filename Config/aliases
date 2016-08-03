@@ -4,9 +4,9 @@
 alias o='xdg-open'
 
 # nicer ls
-alias ll='ls -lh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
-alias lav='ls -lAh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
-alias la='ls -1hs --group-directories-first --color=auto -F'
+alias ll='ls -lh -F'
+alias lav='ls -lAh -F'
+alias la='ls -1hs -F'
 # confirm before overwriting something
 alias cp="cp -viRp"
 # human-readable sizes
@@ -23,9 +23,7 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-#alias orphans='pacman -Qdt'
 alias uuidof='blkid'
-alias xsetstatus='xset q | grep -A1 -i dpms'
 alias fh='find_here'
 
 alias tor='$HOME/Applications/Tor-Browser/./start-tor-browser'
@@ -33,18 +31,5 @@ alias tor='$HOME/Applications/Tor-Browser/./start-tor-browser'
 alias checkout='$HOME/Workspace/Scripts/./checkout.sh'
 alias yt-mpv='$HOME/Workspace/Script/./yt-mpv.sh'
 
-# docker
-alias sucker="sudo docker"
-alias erlang-vm="sucker run -Pti -v ~/Workspace/Remote/haw/vsp:/src erlang-vm /bin/bash"
-
-# dropbox
-alias dp="sudo $HOME/Applications/Dropbox/./dropbox.py"
-
 # equal rights !!! xD
 alias woman='man'
-
-alias pm="sudo pacman --color always"
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
