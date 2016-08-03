@@ -15,14 +15,4 @@
 #shopt -s hostcomplete
 #shopt -s nocaseglob
 
-# disable screen saver
-xset s 0 0
-xset s noblank
-xset -dpms
-
-# customize touchpad gestures
-synclient HorizTwoFingerScroll=1
-synclient ClickFinger3=2
-synclient TapButton3=2
-
 setopt interactivecomments
