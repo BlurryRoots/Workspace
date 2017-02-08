@@ -1,28 +1,9 @@
 # setup shell options
 
-# for compatibility with zsh
-#setopt extendedglob
-#
-#complete -cf sudo
-#
-#shopt -s cdspell
-#shopt -s checkwinsize
-#shopt -s cmdhist
-#shopt -s dotglob
-#shopt -s expand_aliases
-#shopt -s extglob
-#shopt -s histappend
-#shopt -s hostcomplete
-#shopt -s nocaseglob
-
 # disable screen saver
 xset s 0 0
 xset s noblank
 xset -dpms
 
-# customize touchpad gestures
-synclient HorizTwoFingerScroll=1
-synclient ClickFinger3=2
-synclient TapButton3=2
-
+# allow comments in shell commands
 setopt interactivecomments
