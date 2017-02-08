@@ -8,7 +8,9 @@ alias ll='ls -lh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --colo
 alias lav='ls -lAh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
 alias la='ls -1hs --group-directories-first --color=auto -F'
 # confirm before overwriting something
-alias cp="cp -viRp"
+alias cp="cp -vip"
+alias cp-override="/bin/cp -vp"
+alias cp-update="/bin/cp -vp"
 # human-readable sizes
 alias df='df -h'
 # measuring
