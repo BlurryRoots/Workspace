@@ -5,6 +5,11 @@
 # 	org.gnome.shell.extensions.auto-move-windows application-list \
 # 		"['firefox.desktop:2','banshee.desktop:3','thunderbird.desktop:4']"
 
+pdfdiff () {
+	compare -verbose -debug coder "$1" "$2" -compose src "pdfdiff".tmp
+	pdftk "pdfdiff".tmp background "$1" output "pdfdiff.pdf"
+}
+
 fix_steam_lib32 () {
 	find $HOME/.steam/root/ubuntu12_32/steam-runtime/*/usr/lib/ \
 		-name "libstdc++.so.6" -exec mv "{}" "{}.bak" \; -print
