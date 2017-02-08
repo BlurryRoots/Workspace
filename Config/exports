@@ -1,24 +1,14 @@
 # export variables
 
-# extend path
-if [ -e /usr/local/bin ]; then
-	export PATH="/usr/local/bin:$PATH"
-fi
-
 if [ -e $HOME/Workspace/Binaries ]; then
-	export PATH="$HOME/Workspace/Binaries:$PATH"
+	export PATH="$PATH:$HOME/Workspace/Binaries"
 fi
 
 # android stuff
-if [ -e /opt/android-sdk-linux ]; then
-	export ANDROID_HOME=/opt/android-sdk-linux
-	export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
-fi
-
-# google app engine stuff
-if [ -e $HOME/Workspace/Libraries/google-app-engine-python ]; then
-	export PATH="$HOME/Workspace/Libraries/google-app-engine-python:$PATH"
-fi
+#if [ -e /opt/android-sdk-linux ]; then
+#	export ANDROID_HOME=/opt/android-sdk-linux
+#	export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
+#fi
 
 # set shell
 if [ -n "$SHELL" ]; then
