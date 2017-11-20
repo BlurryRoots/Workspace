@@ -4,22 +4,26 @@ if [ -e $HOME/Workspace/Binaries ]; then
 	export PATH="$PATH:$HOME/Workspace/Binaries"
 fi
 
-# android stuff
-#if [ -e /opt/android-sdk-linux ]; then
-#	export ANDROID_HOME=/opt/android-sdk-linux
-#	export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
-#fi
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+export HISTCONTROL=ignoreboth
 
 # set shell
 if [ -n "$SHELL" ]; then
 	export DEFAULT_SHELL="$SHELL"
 fi
-export SHELL=`which zsh`
 
-# vim for non visual editing
-export EDITOR="vim"
+
 # define sublime text as default editor
+if [ -e "/c/Program Files/Sublime Text 3" ]; then
+	export PATH="$PATH:/c/Program Files/Sublime Text 3"
+fi
+export EDITOR="subl"
 export VISUAL="subl"
 
-# set browser
-export BROWSER=`which firefox`
+
+# setup browser
+if [ -e "/c/Program Files/Mozilla Firefox" ]; then
+	export PATH="$PATH:/c/Program Files/Mozilla Firefox"
+fi
+export BROWSER="firefox.exe"

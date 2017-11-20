@@ -1,60 +1,5 @@
 #!/bin/bash
 
-# control which app gets started on which workspace
-# gsettings set \
-# 	org.gnome.shell.extensions.auto-move-windows application-list \
-# 		"['firefox.desktop:2','banshee.desktop:3','thunderbird.desktop:4']"
-
-pdfdiff () {
-	compare -verbose -debug coder "$1" "$2" -compose src "pdfdiff".tmp
-	pdftk "pdfdiff".tmp background "$1" output "pdfdiff.pdf"
-}
-
-fix_steam_lib32 () {
-	find $HOME/.steam/root/ubuntu12_32/steam-runtime/*/usr/lib/ \
-		-name "libstdc++.so.6" -exec mv "{}" "{}.bak" \; -print
-}
-
-open_pdf () {
-	if [ $# -ne 1 ]; then
-		echo "no file given!"
-		return 1
-	fi
-
-	# double fork it !!!
-	(mupdf "$1" &) &
-}
-
-#
-calc () {
-	[ $# -ne 1 ] && {
-		echo "just one string with calculation pleazz!"
-		return 1
-	}
-
-	local stuff="scale=2; $1"
-
-	echo $stuff | bc
-}
-
-#
-drossel () {
-	[ $# -ne 2 ] && {
-		echo "nöööööö"
-		return 1
-	}
-
-	local iface="$1"
-	local speed="$2"
-
-	which wondershaper > /dev/null && {
-		sudo wondershaper clear && \
-		sudo wondershaper "$iface" "${speed}0" "${speed}0"
-	} || {
-		exit 1
-	}
-}
-
 #
 find_string () {
 	[ $# -ne 2 ] && {
@@ -65,11 +10,6 @@ find_string () {
 	find "$1" -type f | xargs -I{} fgrep --color=always -Hno "$2" "{}"
 
 	return 0
-}
-
-#
-show_connections () {
-	sudo netstat -natp
 }
 
 #
@@ -88,19 +28,6 @@ who_uses_port () {
 	}
 }
 
-# brighter
-brighter () {
-	local loc=/sys/class/backlight/acpi_video0/brightness
-	local level
-
-	[ "$#" = "0" ] && {
-		level=`cat $loc`
-		echo $level
-	} || {
-		su -c "echo $1 > $loc"
-	}
-}
-
 # frontend for rsync
 netcp () {
 	local user="$1"
@@ -110,37 +37,6 @@ netcp () {
 	local dst="$5"
 
 	rsync -aP -e "ssh -p$port" "$user@$addr:$src" "$dst"
-}
-
-# ex - archive extractor
-# usage: ex <file>
-ex () {
-	if [ -f $1 ] ; then
-		case $1 in
-			*.tar.bz2)   tar xjf $1   ;;
-			*.tar.gz)    tar xzf $1   ;;
-			*.bz2)       bunzip2 $1   ;;
-			*.rar)       unrar x $1   ;;
-			*.gz)        gunzip $1    ;;
-			*.tar)       tar xf $1    ;;
-			*.tbz2)      tar xjf $1   ;;
-			*.tgz)       tar xzf $1   ;;
-			*.zip)       unzip $1     ;;
-			*.Z)         uncompress $1;;
-			*.7z)        7z x $1      ;;
-			*)           echo "'$1' cannot be extracted via ex()" ;;
-		esac
-	else
-		echo "'$1' is not a valid file"
-	fi
-}
-
-cleanup_caches () {
-	rm -rf ~/.thumbnails
-	mkdir -p ~/.thumbnails
-
-	rm -rf ~/.cache
-	mkdir -p ~/.cache
 }
 
 #

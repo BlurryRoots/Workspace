@@ -1,9 +1,8 @@
 # setup shell options
 
-# disable screen saver
-xset s 0 0
-xset s noblank
-xset -dpms
+# append to the history file, don't overwrite it
+shopt -s histappend
 
-# allow comments in shell commands
-setopt interactivecomments
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
