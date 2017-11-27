@@ -1,6 +1,7 @@
 # config
-subl_config_path="$HOME/.config/sublime-text-3/Packages/User"
-subl_keymap_name="Default (Linux).sublime-keymap"
+subl_config_path="$HOME/AppData/Roaming/Sublime Text 3/Packages/User"
+subl_keymap_name="Default (Windows).sublime-keymap"
 
 # copy
 cp -i "$subl_keymap_name" "$subl_config_path/$subl_keymap_name"
+
