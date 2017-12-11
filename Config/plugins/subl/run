@@ -4,3 +4,4 @@ subl_keymap_name="Default (Windows).sublime-keymap"
 
 # copy
 cp -i "$subl_keymap_name" "$subl_config_path/$subl_keymap_name"
+
