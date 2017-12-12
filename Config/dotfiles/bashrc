@@ -1,2 +1,2 @@
 # load workspace config init script
-source $HOME/Workspace/Config/oninit
+source "/d/Workspace/Config/oninit"
