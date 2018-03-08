@@ -3,7 +3,7 @@
 # entry point
 
 # change this to your liking
-export CONFIGURATION_PATH="/d/Workspace/Config"
+export CONFIGURATION_PATH="$HOME/Workspace/Config"
 
 # set guard
 export CONFIGURATION_LOADED=yes
