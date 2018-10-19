@@ -1,7 +1,7 @@
 # aliases
 
 # open files
-alias o='xdg-open'
+alias o='open'
 
 # nicer ls
 alias ll='ls -lh -F'
