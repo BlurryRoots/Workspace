@@ -2,6 +2,9 @@
 subl_config_path="$HOME/AppData/Roaming/Sublime Text 3/Packages/User"
 subl_keymap_name="Default (Windows).sublime-keymap"
 
+# make sure path is existing
+mkdir -p "$subl_config_path"
+
 # copy
 cp -i "$subl_keymap_name" "$subl_config_path/$subl_keymap_name"
 

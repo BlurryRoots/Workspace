@@ -27,3 +27,5 @@ alias fh='find_here'
 
 # equal rights !!! xD
 alias woman='man'
+
+alias ws='cd $CONFIGURATION_PATH/../'
