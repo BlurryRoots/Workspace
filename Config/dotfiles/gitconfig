@@ -16,6 +16,7 @@
 	af = add -vf
 	rmc = rm -r --cached
 	m = commit -m
+	me = commit
 	ma = commit --amend
 	mam = commit --amend -m
 	s = status -bs
