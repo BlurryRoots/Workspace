@@ -13,15 +13,6 @@ if [ -n "$SHELL" ]; then
 	export DEFAULT_SHELL="$SHELL"
 fi
 
-
-# define sublime text as default editor
-if [ -e "/c/Program Files/Sublime Text 3" ]; then
-	export PATH="$PATH:/c/Program Files/Sublime Text 3"
-fi
-export EDITOR="subl"
-export VISUAL="subl"
-
-
 # setup browser
 if [ -e "/c/Program Files/Mozilla Firefox" ]; then
 	export PATH="$PATH:/c/Program Files/Mozilla Firefox"

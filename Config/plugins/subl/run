@@ -1,10 +1,9 @@
-# config
-subl_config_path="$HOME/AppData/Roaming/Sublime Text 3/Packages/User"
-subl_keymap_name="Default (Windows).sublime-keymap"
+# load config
+plugin_dir=$(dirname $(readlink -f "$BASH_SOURCE[0]"))
+source "$plugin_dir/config"
 
 # make sure path is existing
 mkdir -p "$subl_config_path"
 
 # copy
-cp -i "$subl_keymap_name" "$subl_config_path/$subl_keymap_name"
-
+cp -i "$(get_subl_keymap_name)" "$(get_subl_user_data_path)/$(get_subl_keymap_name)"

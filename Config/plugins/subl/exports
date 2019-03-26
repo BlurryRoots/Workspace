@@ -1,0 +1,15 @@
+# load config
+plugin_dir=$(dirname $(readlink -f "$BASH_SOURCE[0]"))
+source "$plugin_dir/config"
+
+# export path to subl installtion
+export SUBL_PATH="$(get_subl_install_path)"
+
+# define sublime text as default editor
+if [ -e "$SUBL_PATH" ]; then
+	export PATH="$PATH:$SUBL_PATH"
+	export EDITOR="subl"
+	export VISUAL="subl"
+else
+	echo "Error setting up subl path!"
+fi

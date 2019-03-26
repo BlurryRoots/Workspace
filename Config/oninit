@@ -28,6 +28,10 @@ workspace_config_load () {
 
 	# setup exports
 	source "$CONFIGURATION_PATH/exports"
+	plugin_exports_array=$(echo "$CONFIGURATION_PATH/plugins"/**/"exports")
+	for plugin_export in $plugin_exports_array; do
+		source "$plugin_export"
+	done
 
 	# setup helper functions
 	source "$CONFIGURATION_PATH/functions"

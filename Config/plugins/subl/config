@@ -1,0 +1,16 @@
+# config
+subl_install_path="YOUR PATH HERE!"
+subl_config_path="$subl_install_path/Data/Packages/User"
+subl_keymap_name="Default (Windows).sublime-keymap"
+
+get_subl_install_path() {
+	echo $subl_install_path
+}
+
+get_subl_user_data_path() {
+	echo $subl_config_path
+}
+
+get_subl_keymap_name() {
+	echo $subl_keymap_name
+}
