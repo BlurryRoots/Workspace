@@ -72,6 +72,10 @@
 //    alt
 //    super (Windows key, Command key…)
 
+	// folding
+	{ "keys": ["ctrl+k", "ctrl+k"], "command": "fold" },
+	{ "keys": ["ctrl+k", "ctrl+j"], "command": "unfold_all" },
+
 	// basic movement
 	{ "keys": ["alt+j"], "command": "move", "args": {"by": "characters", "forward": false} },
 	{ "keys": ["alt+o"], "command": "move", "args": {"by": "characters", "forward": true} },

@@ -8,7 +8,7 @@
 	r = remote
 	d = diff
 	ds = diff --staged
-	dc = show --color --pretty=format:%b HEAD
+	dc = show --color --pretty=format:%b HEAD^ HEAD
 	dt = difftool --no-prompt
 	e = config -e
 	c = checkout
