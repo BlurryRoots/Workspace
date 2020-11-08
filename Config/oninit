@@ -9,12 +9,22 @@ export CONFIGURATION_PATH="$HOME/Workspace/Config"
 export CONFIGURATION_LOADED=yes
 
 workspace_config_plugin () {
-	if ((1 != $#)); then
+	if ((2 != $#)); then
 		echo "no plugin name provided"
 		return 1
 	fi
 
-	(cd "$CONFIGURATION_PATH/plugins/$1" && ./run)
+	pushd "$CONFIGURATION_PATH/plugins/$2" > /dev/null
+	case "$1" in
+		"install" )
+			if [ -e "install" ] && ./install
+			;;
+		"init" )
+			if [ -e "init" ] && source init
+			;;
+	esac
+	popd > /dev/null
+
 	return 0
 }
 
@@ -37,6 +47,12 @@ workspace_config_load () {
 
 	# import additional functionality
 	source "$CONFIGURATION_PATH/imports"
+	
+	# iterate through all active plugins and initialize their additinal features
+	touch "$CONFIGURATION_PATH/plugins/activated"
+	for plugin in $(cat "$CONFIGURATION_PATH/plugins/activated"); do
+		workspace_config_plugin init "$plugin"
+	done
 }
 
 # and call it
