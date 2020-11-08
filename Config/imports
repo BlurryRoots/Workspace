@@ -1,6 +1,3 @@
 #!/bin/bash
 
 # import additional functionality
-
-# paket tool
-source ~/Workspace/Scripts/paket/setup.sh
