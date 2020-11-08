@@ -34,5 +34,7 @@ source $ZSH/oh-my-zsh.sh
 
 unset zle_bracketed_paste
 
-# load workspace config init script
-source "$WS_CFG_PATH/oninit"
+# load workspace library
+source "$WS_CFG_PATH/ws-shared"
+# run config init script
+source "$WS_CFG_PATH/ws-oninit"
