@@ -1,4 +1,14 @@
+source $WS_CFG_PATH/ws-shared
 source ./shared
 
 # copy
-ln "$subl_keymap_name" "$subl_config_path/$subl_keymap_name"
+_ws_log verbose "Linking $subl_keymap_name to $subl_config_path/$subl_keymap_name"
+
+LN_FLAGS=-s
+LN_REDIRECT= >/dev/null
+if _ws_should_log verbose; then
+	LN_REDIRECT=
+	LN_FLAGS+=v
+fi
+
+ln $LN_FLAGS "$WS_MY_PLUGIN_ROOT/$subl_keymap_name" "$subl_config_path/$subl_keymap_name" $LN_REDIRECT
