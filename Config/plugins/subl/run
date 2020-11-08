@@ -1,6 +1,0 @@
-# config
-subl_config_path="$HOME/Library/Application Support/Sublime Text 3/Packages/User"
-subl_keymap_name="Default (Mac).sublime-keymap"
-
-# copy
-cp -i "$subl_keymap_name" "$subl_config_path/$subl_keymap_name"

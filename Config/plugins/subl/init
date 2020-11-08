@@ -1,0 +1,7 @@
+## Export additional subl functionality
+
+# define sublime text as default editor
+export VISUAL="subl"
+
+alias s=subl
+alias sa="subl -a"

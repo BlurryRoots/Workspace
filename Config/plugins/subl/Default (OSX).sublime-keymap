@@ -148,4 +148,6 @@
 		]
 	},
 
+	// toggle build-in console
+	{ "keys": ["super+alt+-"], "command": "show_panel", "args": {"panel": "console", "toggle": true} }
 ]
