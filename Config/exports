@@ -8,7 +8,7 @@ export WS_CFG_LOGLEVEL=$_WS_CFG_LOG_VERBOSE
 
 # basic user paths, previously set in .zshrc
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$PATH"
-export PATH="WS_CFG_PATH/bin:$PATH"
+export PATH="$WS_CFG_PATH/bin:$PATH"
 
 # JAVA
 if [ -e /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home ]; then
