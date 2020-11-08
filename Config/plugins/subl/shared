@@ -1,0 +1,7 @@
+# config
+subl_config_path="$HOME/Library/Application Support/Sublime Text 3/Packages/User"
+subl_keymap_name="Default (OSX).sublime-keymap"
+
+function date_timestamp_name () {
+	echo $(date '+%Y%m%d.%H%M%S')
+}

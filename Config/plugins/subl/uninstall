@@ -1,0 +1,14 @@
+source ./shared
+
+# remove keymap
+#if [ -h "$subl_config_path/$subl_keymap_name" ]; then
+if [ -e "$subl_config_path/$subl_keymap_name" ]; then
+	echo "creating backup for '$subl_keymap_name' ..."
+	cp -Rav "$subl_config_path/$subl_keymap_name" "$subl_config_path/$subl_keymap_name.$(date_timestamp_name).bak"
+	echo "removing origin '$subl_keymap_name' in '$subl_config_path' ..."
+	rm "$subl_config_path/$subl_keymap_name"
+	exit 0
+else
+	echo "Keyfile is missing! ($subl_config_path/$subl_keymap_name)" >&2
+	exit 1
+fi
