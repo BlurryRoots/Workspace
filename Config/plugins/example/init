@@ -1,1 +1,2 @@
 # run each time the workspace is initialized, similar to .bashrc
+echo initalizing example plugin

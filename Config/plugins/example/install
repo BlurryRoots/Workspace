@@ -1,1 +1,2 @@
 # run file, executed when plugin is installed
+echo installed example plugin
