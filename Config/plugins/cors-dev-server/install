@@ -1,0 +1,17 @@
+# run file, executed when plugin is installed
+
+source $WS_CFG_PATH/ws-shared
+source $WS_MY_PLUGIN_ROOT/shared
+
+source_path="$cors_dev_server_path"
+target_path="$cors_link_target_path"
+# copy
+_ws_log verbose "Linking $source_path to $target_path"
+
+LN=/bin/ln
+LN_FLAGS=-s
+if _ws_should_log $_WS_CFG_LOG_VERBOSE; then
+	LN_FLAGS+=v
+fi
+
+_ws_log verbose $($LN $LN_FLAGS "$source_path" "$target_path")

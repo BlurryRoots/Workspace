@@ -1,0 +1,3 @@
+cors_dev_server_script=cors-server.py
+cors_dev_server_path="$WS_MY_PLUGIN_ROOT/$cors_dev_server_script"
+cors_link_target_path="$WS_CFG_PATH/bin/cors-dev-server"

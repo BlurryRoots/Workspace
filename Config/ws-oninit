@@ -1,0 +1,141 @@
+#!/bin/bash
+
+# check if library iis already loaded
+if [ ! -n "$WS_CFG_PATH" ]; then
+	source "$(dirname $0)/ws-shared"
+fi
+
+# plugin control functions
+workspace_config_plugin () {	
+	if [ 0 = $# ]; then
+		_ws_log error "no command provided" >&2
+		return 1
+	fi
+
+	_workspace_plugin_register_trim
+
+	case "$1" in
+		"list" )
+			_workspace_plugin_register_list
+			return 0
+		;;
+	esac
+
+	if ((2 != $#)); then
+		_ws_log error "no plugin name provided" >&2
+		return 1
+	fi
+
+	local plugin_register=$WS_CFG_PATH/plugins/activated
+	local plugin_base_path=$WS_CFG_PATH/plugins/$2
+	local subcommand_code=0
+
+	if [ -e "$plugin_base_path" ]; then
+		export WS_MY_PLUGIN_ROOT="$plugin_base_path"
+		case "$1" in
+			"install" )
+				if _workspace_plugin_register_contains "$2"; then
+					_ws_log error "$2 already installed, skipping ..." >&2
+					subcommand_code=42
+				else
+					if [ -e "$plugin_base_path/install" ]; then
+						_ws_log verbose "installing $2 ..."
+					 	"$plugin_base_path"/./install
+					 	_ws_log verbose "adding $2 to register ..."
+						_workspace_plugin_register_append "$2"
+						subcommand_code=$?
+					else
+						_ws_log error "missing install script for $2" >&2
+						subcommand_code=1336
+					fi
+				fi
+				;;
+			"reinstall" )
+				export WS_PLUGIN_IGNORE_PUSHD=0
+				workspace_config_plugin uninstall "$2"
+				if [[ 0 == $? || 23 == $? ]]; then # 23 means has not been active
+					workspace_config_plugin install "$2"
+				else
+					_ws_log error "could not reinstall $2 ($?)"
+				fi
+				subcommand_code=$?
+				unset WS_PLUGIN_IGNORE_PUSHD
+				;;
+			"init" )
+				_ws_log verbose "Initializing $2 ..."
+				_workspace_plugin_register_contains "$2" && if [ -e "$plugin_base_path/init" ] && source "$plugin_base_path/init"
+				subcommand_code=$?
+				;;
+			"uninstall" )
+				if _workspace_plugin_register_contains "$2"; then
+					_ws_log verbose "uninstalling $2 ..."
+					if [ -e "$plugin_base_path/uninstall" ]; then
+						_ws_log verbose "running uninstall script for $2 ..."
+						"$plugin_base_path"/./uninstall
+						subcommand_code=$?
+					else
+						echo "uninstall script missing for $2" >&2
+						subcommand_code=1377
+					fi
+				else
+					_ws_log warning "$2 not active, skipping uninstall ..." >&2
+					subcommand_code=23
+				fi
+				;;
+			* )
+				_ws_log error "unknown command $1, skipping operation" >&2
+				subcommand_code=815
+		esac
+
+		unset WS_MY_PLUGIN_ROOTs
+	fi
+
+	case "$1" in
+		"uninstall" )
+			if _workspace_plugin_register_contains "$2"; then
+				_ws_log verbose "removing $2 from register ..."
+				_workspace_plugin_register_remove "$2"
+			else
+				_ws_log warning "$2 is not in register, skipping removal ..." >&2
+			fi
+		;;
+		"list" )
+			_workspace_plugin_register_list
+		;;
+	esac
+
+	_workspace_plugin_register_trim
+		
+	return $subcommand_code
+}
+
+# define function ws control function
+workspace_config_load () {
+	# setup dotfiles
+	source "$WS_CFG_PATH/link-dotfiles"
+
+	# setup options
+	source "$WS_CFG_PATH/options"
+
+	# setup aliases
+	source "$WS_CFG_PATH/aliases"
+
+	# setup exports
+	source "$WS_CFG_PATH/exports"
+
+	# setup helper functions
+	source "$WS_CFG_PATH/functions"
+
+	# import additional functionality
+	source "$WS_CFG_PATH/imports"
+	
+	# iterate through all active plugins and initialize their additinal features
+	# touch "$WS_CFG_PATH/plugins/activated"
+	# for plugin in $(cat "$WS_CFG_PATH/plugins/activated"); do
+	for plugin in $(_workspace_plugin_register_list); do
+		workspace_config_plugin init "$plugin"
+	done
+}
+
+# and call it
+workspace_config_load

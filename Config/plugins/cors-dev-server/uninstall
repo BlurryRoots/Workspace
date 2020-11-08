@@ -1,0 +1,23 @@
+#!/bin/zsh
+source $WS_CFG_PATH/ws-shared
+source $WS_MY_PLUGIN_ROOT/shared
+
+source_path="$cors_dev_server_path"
+target_path="$cors_link_target_path"
+
+if [ -e "$target_path" ]; then
+	RM=/bin/rm
+	REDIRECT=/dev/null
+	RM_FLAGS=
+	if _ws_should_log $_WS_CFG_LOG_VERBOSE; then
+		REDIRECT=/dev/stdout
+		RM_FLAGS=-v
+	fi
+
+	_ws_log verbose "removing '$target_path' ..."
+	_ws_log verbose $($RM $RM_FLAGS "$target_path")
+else
+	_ws_log warning "Script is missing! ($target_path)" >&2
+fi
+
+exit 0

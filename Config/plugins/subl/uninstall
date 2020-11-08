@@ -1,6 +1,6 @@
 #!/bin/zsh
 source $WS_CFG_PATH/ws-shared
-source ./shared
+source $WS_MY_PLUGIN_ROOT/shared
 
 # remove keymap
 #if [ -h "$subl_config_path/$subl_keymap_name" ]; then
@@ -8,25 +8,22 @@ if [ -e "$subl_config_path/$subl_keymap_name" ]; then
 	_ws_log verbose "creating backup for '$subl_keymap_name' ..."
 
 	CP=/bin/cp
-	CP_REDIRECT=/dev/null
 	CP_FLAGS="-p"
+	RM=/bin/rm
 	RM_FLAGS=
 	if _ws_should_log $_WS_CFG_LOG_VERBOSE; then
-		_ws_log error WTF
 		CP_FLAGS+=v
-		CP_REDIRECT=/dev/stdout
-		RM_FLAGS=-v
+		RM_FLAGS+=-v
 	fi
 
-	_ws_log error "CP:$CP, CP_FLAGS:$CP_FLAGS, CP_REDIRECT:$CP_REDIRECT"
-
-	$CP $CP_FLAGS "$subl_config_path/$subl_keymap_name" "$subl_config_path/$subl_keymap_name.$(date_timestamp_name).bak" >$CP_REDIRECT
+	_ws_log verbose $($CP $CP_FLAGS "$subl_config_path/$subl_keymap_name" "$subl_config_path/$subl_keymap_name.$(date_timestamp_name).bak" 2>&1)
 
 	_ws_log verbose "removing origin '$subl_keymap_name' in '$subl_config_path' ..."
-	rm $RM_FLAGS "$subl_config_path/$subl_keymap_name" >$CP_REDIRECT
-
-	exit 0
+	_ws_log verbose $($RM $RM_FLAGS "$subl_config_path/$subl_keymap_name")
 else
-	_ws_log error "Keyfile is missing! ($subl_config_path/$subl_keymap_name)" >&2
-	exit 1
+	_ws_log warning "Keyfile is missing! ($subl_config_path/$subl_keymap_name)" >&2
 fi
+
+_ws_log verbose "Finishing up uninstall for subl"
+
+exit 0

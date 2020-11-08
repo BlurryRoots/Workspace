@@ -1,0 +1,87 @@
+
+# might have already been set by .(bash|zsh|*)rc
+if [ ! -n "$WS_CFG_PATH" ]; then
+	export WS_CFG_PATH="$HOME/Workspace/Config"
+fi
+
+#
+export WS_CFG_PLUGIN_PATH="$WS_CFG_PATH/plugins"
+
+#
+export WS_CFG_PLUGIN_REGISTER_PATH="$WS_CFG_PLUGIN_PATH/activated"
+
+## helper library
+
+#
+_workspace_plugin_register_trim () {
+	touch "$WS_CFG_PLUGIN_REGISTER_PATH"
+	# make sure there is proper eof and trim all superflous linebreaks
+	sed -i -e '/^\s*$/d' "$WS_CFG_PLUGIN_REGISTER_PATH"
+}
+
+_workspace_plugin_register_list () {
+	touch "$WS_CFG_PLUGIN_REGISTER_PATH"
+	cat "$WS_CFG_PLUGIN_REGISTER_PATH"
+}
+
+_workspace_plugin_register_contains () {
+	grep -wE "\<$1\>" "$WS_CFG_PLUGIN_REGISTER_PATH" > /dev/null
+	return $?
+}
+
+_workspace_plugin_register_append () {
+	echo "\n$1" >> "$WS_CFG_PLUGIN_REGISTER_PATH"
+}
+
+_workspace_plugin_register_remove () {
+	local sed_pattern=/^$1$/d
+	# remove occurances of pattern in place
+	sed -i -e "$sed_pattern" "$WS_CFG_PLUGIN_REGISTER_PATH"
+	# sed creates a backup file, remove it
+	rm "$WS_CFG_PLUGIN_PATH/activated-e"	
+}
+
+_ws_to_lower () {
+	echo $1 | tr "[:upper:]" "[:lower:]" 
+}
+
+_ws_should_log () {
+	if [[ $1 -le $WS_CFG_LOGLEVEL ]]; then
+		return 0
+	fi
+
+	return 1
+}
+
+_ws_log () {
+	local lowercase_cmd=$(_ws_to_lower "$1")
+	local should_log=1
+	local rvalue=0
+	case "$lowercase_cmd" in
+		"verbose" )
+			if _ws_should_log $_WS_CFG_LOG_VERBOSE; then
+				should_log=0
+			fi
+		;;
+		"warning" )
+			if _ws_should_log $_WS_CFG_LOG_WARN; then
+				should_log=0
+			fi
+		;;
+		"error" )
+			if _ws_should_log $_WS_CFG_LOG_ERROR; then
+				should_log=0
+			fi
+		;;
+		* )
+			echo "unknown loglevel $lowercase_cmd" >&2
+			rvalue=1
+		;;
+	esac
+
+	[ 0 = $should_log ] && echo "log($lowercase_cmd): ${@:2}"
+
+	return $rvalue
+}
+
+export WS_CFG_SHARED_IS_READY=true
