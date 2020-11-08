@@ -1,21 +1,30 @@
 # export variables
 
+# JAVA
+if [ -e /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home ]; then
+	# Point JAVA_HOME to your OpenJDK 8 
+	export JAVA_HOME="/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home"
+fi
+
+# android stuff
+if [ -e $HOME/Library/Android/sdk ]; then
+	# The Android SDKs come from Android Studio and are placed here
+	export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+	export ANDROID_HOME="$ANDROID_SDK_ROOT"
+fi
+
+
 # extend path
 if [ -e /usr/local/bin ]; then
 	export PATH="/usr/local/bin:$PATH"
 fi
-
 if [ -e $HOME/Workspace/Binaries ]; then
 	export PATH="$HOME/Workspace/Binaries:$PATH"
 fi
-
-# android stuff
-if [ -e /opt/android-sdk-linux ]; then
-	export ANDROID_HOME=/opt/android-sdk-linux
-	export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
+if [ -e $ANDROID_SDK_ROOT/emulator ]; then
+	export PATH="$ANDROID_SDK_ROOT/emulator:$PATH"
+	export PATH="/Users/tesseract/Library/Android/sdk/platform-tools/platform-tools:$PATH"
 fi
-
-# google app engine stuff
 if [ -e $HOME/Workspace/Libraries/google-app-engine-python ]; then
 	export PATH="$HOME/Workspace/Libraries/google-app-engine-python:$PATH"
 fi
@@ -32,4 +41,4 @@ export EDITOR="vim"
 export VISUAL="subl"
 
 # set browser
-export BROWSER=`which firefox`
+export BROWSER=/Applications/Firefox.app/Contents/MacOS/firefox
