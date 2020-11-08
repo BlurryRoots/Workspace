@@ -1,5 +1,8 @@
 # aliases
 
+#git
+alias g='git'
+
 # make
 alias m='make'
 
