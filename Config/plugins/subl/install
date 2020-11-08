@@ -4,11 +4,14 @@ source ./shared
 # copy
 _ws_log verbose "Linking $subl_keymap_name to $subl_config_path/$subl_keymap_name"
 
+LN=/bin/ln
 LN_FLAGS=-s
-LN_REDIRECT= >/dev/null
-if _ws_should_log verbose; then
-	LN_REDIRECT=
+LN_REDIRECT=/dev/null
+if _ws_should_log $_WS_CFG_LOG_VERBOSE; then
+	LN_REDIRECT=/dev/stdout
 	LN_FLAGS+=v
 fi
 
-ln $LN_FLAGS "$WS_MY_PLUGIN_ROOT/$subl_keymap_name" "$subl_config_path/$subl_keymap_name" $LN_REDIRECT
+_ws_log error "LN:$LN, LN_FLAGS:$LN_FLAGS, LN_REDIRECT:$LN_REDIRECT"
+
+$LN $LN_FLAGS "$WS_MY_PLUGIN_ROOT/$subl_keymap_name" "$subl_config_path/$subl_keymap_name" >$LN_REDIRECT
