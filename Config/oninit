@@ -5,27 +5,138 @@
 # change this to your liking
 export CONFIGURATION_PATH="$HOME/Workspace/Config"
 
+#
+export CONFIGURATION_PLUGIN_PATH="$CONFIGURATION_PATH/plugins"
+
+#
+export CONFIGURATION_PLUGIN_REGISTER="$CONFIGURATION_PLUGIN_PATH/activated"
+
 # set guard
 export CONFIGURATION_LOADED=yes
 
+_workspace_plugin_register_trim () {
+	# make sure there is proper eof and trim all superflous linebreaks
+	sed -i -e '/^\s*$/d' "$CONFIGURATION_PLUGIN_REGISTER"
+}
+
+_workspace_plugin_register_list () {
+	touch "$CONFIGURATION_PLUGIN_REGISTER"
+	cat "$CONFIGURATION_PLUGIN_REGISTER"
+}
+
+_workspace_plugin_register_contains () {
+	grep -wE "\<$1\>" "$CONFIGURATION_PLUGIN_REGISTER" > /dev/null
+	return $?
+}
+
+_workspace_plugin_register_append () {
+	echo "\n$1" >> "$CONFIGURATION_PLUGIN_REGISTER"
+}
+
+_workspace_plugin_register_remove () {
+	local sed_pattern=/^$1$/d
+	# remove occurances of pattern in place
+	sed -i -e "$sed_pattern" "$CONFIGURATION_PLUGIN_REGISTER"
+	# sed creates a backup file, remove it
+	rm "$CONFIGURATION_PLUGIN_PATH/activated-e"	
+}
+
 workspace_config_plugin () {
+	if [ 0 = $# ]; then
+		echo "no command provided"
+		return 1
+	fi
+
+	_workspace_plugin_register_trim
+
+	case "$1" in
+		"list" )
+			_workspace_plugin_register_list
+			return 0
+		;;
+	esac
+
 	if ((2 != $#)); then
 		echo "no plugin name provided"
 		return 1
 	fi
 
-	pushd "$CONFIGURATION_PATH/plugins/$2" > /dev/null
-	case "$1" in
-		"install" )
-			if [ -e "install" ] && ./install
-			;;
-		"init" )
-			if [ -e "init" ] && source init
-			;;
-	esac
-	popd > /dev/null
+	local plugin_register=$CONFIGURATION_PATH/plugins/activated
+	local plugin_base_path=$CONFIGURATION_PATH/plugins/$2
+	local subcommand_code=0
 
-	return 0
+	if [ -e "$plugin_base_path" ]; then
+		pushd "$plugin_base_path" > /dev/null
+		case "$1" in
+			"install" )
+				if _workspace_plugin_register_contains "$2"; then
+					echo "$2 already installed, skipping ..." >&2
+					subcommand_code=42
+				else
+					if [ -e "install" ]; then
+						echo "installing $2 ..."
+					 	./install
+					 	echo "adding $2 to register ..."
+						_workspace_plugin_register_append "$2"
+						subcommand_code=$?
+					else
+						echo "missing install script for $2" >&2
+						subcommand_code=1336
+					fi
+				fi
+				;;
+			"reinstall" )
+				workspace_config_plugin uninstall "$2"
+				if [[ 0 == $? || 23 == $? ]]; then # 23 means has not been active
+					workspace_config_plugin install "$2"
+				else
+					echo "could not reinstall $2 ($?)"
+				fi
+				subcommand_code=$?
+				;;
+			"init" )
+				_workspace_plugin_register_contains "$2" && if [ -e "init" ] && source init
+				subcommand_code=$?
+				;;
+			"uninstall" )
+				if _workspace_plugin_register_contains "$2"; then
+					if [ -e "uninstall" ]; then
+						echo "uninstalling $2 ..."
+						./uninstall
+						subcommand_code=$?
+					else
+						echo "uninstall script missing for $2" >&2
+						subcommand_code=1377
+					fi
+				else
+					echo "$2 not active, skipping uninstall ..." >&2
+					subcommand_code=23
+				fi
+				;;
+			* )
+				echo "unknown command $1, skipping operation" >&2
+				subcommand_code=815
+		esac
+		popd > /dev/null 2>&1
+	fi
+
+	case "$1" in
+		"uninstall" )
+			if _workspace_plugin_register_contains "$2"; then
+				echo "removing $2 from register ..."
+				_workspace_plugin_register_remove "$2"
+			else
+				echo "$2 is not in register, skipping removal ..." >&2
+			fi
+		;;
+		"list" )
+			_workspace_plugin_register_list
+		;;
+	esac
+
+	_workspace_plugin_register_trim
+		
+	return $subcommand_code
 }
 
 # define function to reinitialize
@@ -49,8 +160,9 @@ workspace_config_load () {
 	source "$CONFIGURATION_PATH/imports"
 	
 	# iterate through all active plugins and initialize their additinal features
-	touch "$CONFIGURATION_PATH/plugins/activated"
-	for plugin in $(cat "$CONFIGURATION_PATH/plugins/activated"); do
+	# touch "$CONFIGURATION_PATH/plugins/activated"
+	# for plugin in $(cat "$CONFIGURATION_PATH/plugins/activated"); do
+	for plugin in _workspace_plugin_register_list; do
 		workspace_config_plugin init "$plugin"
 	done
 }
