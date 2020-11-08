@@ -1,11 +1,22 @@
 # aliases
 
+# make
+alias m='make'
+
+#python
+alias p='python3'
+alias pp='p -m pip'
+
 # open files
 alias o='open'
 
 # nicer ls
+#alias ls='/bin/ls'
+unalias ls
+alias ls='ls -G'
 alias ll='ls -lh -F'
 alias lav='ls -lAh -F'
+alias lavt='ls -lAh -F -t'
 alias la='ls -1hs -F'
 # confirm before overwriting something
 alias cp="cp -viRp"
@@ -33,3 +44,6 @@ alias yt-mpv='$HOME/Workspace/Script/./yt-mpv.sh'
 
 # equal rights !!! xD
 alias woman='man'
+
+#
+alias butt='$HOME/Library/Application\ Support/itch/apps/butler/butler'
