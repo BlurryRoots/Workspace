@@ -2,44 +2,46 @@
 
 # entry point
 
-# change this to your liking
-export CONFIGURATION_PATH="$HOME/Workspace/Config"
+# might have already been set by .(bash|zsh|*)rc
+if [ ! -n "$WS_CFG_PATH" ]; then
+	export WS_CFG_PATH="$HOME/Workspace/Config"
+fi
 
 #
-export CONFIGURATION_PLUGIN_PATH="$CONFIGURATION_PATH/plugins"
+export WS_CFG_PLUGIN_PATH="$WS_CFG_PATH/plugins"
 
 #
-export CONFIGURATION_PLUGIN_REGISTER="$CONFIGURATION_PLUGIN_PATH/activated"
+export WS_CFG_PLUGIN_REGISTER_PATH="$WS_CFG_PLUGIN_PATH/activated"
 
 # set guard
-export CONFIGURATION_LOADED=yes
+export WS_CFG_IS_LOADED=yes
 
 _workspace_plugin_register_trim () {
-	touch "$CONFIGURATION_PLUGIN_REGISTER"
+	touch "$WS_CFG_PLUGIN_REGISTER_PATH"
 	# make sure there is proper eof and trim all superflous linebreaks
-	sed -i -e '/^\s*$/d' "$CONFIGURATION_PLUGIN_REGISTER"
+	sed -i -e '/^\s*$/d' "$WS_CFG_PLUGIN_REGISTER_PATH"
 }
 
 _workspace_plugin_register_list () {
-	touch "$CONFIGURATION_PLUGIN_REGISTER"
-	cat "$CONFIGURATION_PLUGIN_REGISTER"
+	touch "$WS_CFG_PLUGIN_REGISTER_PATH"
+	cat "$WS_CFG_PLUGIN_REGISTER_PATH"
 }
 
 _workspace_plugin_register_contains () {
-	grep -wE "\<$1\>" "$CONFIGURATION_PLUGIN_REGISTER" > /dev/null
+	grep -wE "\<$1\>" "$WS_CFG_PLUGIN_REGISTER_PATH" > /dev/null
 	return $?
 }
 
 _workspace_plugin_register_append () {
-	echo "\n$1" >> "$CONFIGURATION_PLUGIN_REGISTER"
+	echo "\n$1" >> "$WS_CFG_PLUGIN_REGISTER_PATH"
 }
 
 _workspace_plugin_register_remove () {
 	local sed_pattern=/^$1$/d
 	# remove occurances of pattern in place
-	sed -i -e "$sed_pattern" "$CONFIGURATION_PLUGIN_REGISTER"
+	sed -i -e "$sed_pattern" "$WS_CFG_PLUGIN_REGISTER_PATH"
 	# sed creates a backup file, remove it
-	rm "$CONFIGURATION_PLUGIN_PATH/activated-e"	
+	rm "$WS_CFG_PLUGIN_PATH/activated-e"	
 }
 
 workspace_config_plugin () {	
@@ -62,8 +64,8 @@ workspace_config_plugin () {
 		return 1
 	fi
 
-	local plugin_register=$CONFIGURATION_PATH/plugins/activated
-	local plugin_base_path=$CONFIGURATION_PATH/plugins/$2
+	local plugin_register=$WS_CFG_PATH/plugins/activated
+	local plugin_base_path=$WS_CFG_PATH/plugins/$2
 	local subcommand_code=0
 
 	if [ -e "$plugin_base_path" ]; then
@@ -143,26 +145,26 @@ workspace_config_plugin () {
 # define function to reinitialize
 workspace_config_load () {
 	# setup dotfiles
-	source "$CONFIGURATION_PATH/link-dotfiles"
+	source "$WS_CFG_PATH/link-dotfiles"
 
 	# setup options
-	source "$CONFIGURATION_PATH/options"
+	source "$WS_CFG_PATH/options"
 
 	# setup aliases
-	source "$CONFIGURATION_PATH/aliases"
+	source "$WS_CFG_PATH/aliases"
 
 	# setup exports
-	source "$CONFIGURATION_PATH/exports"
+	source "$WS_CFG_PATH/exports"
 
 	# setup helper functions
-	source "$CONFIGURATION_PATH/functions"
+	source "$WS_CFG_PATH/functions"
 
 	# import additional functionality
-	source "$CONFIGURATION_PATH/imports"
+	source "$WS_CFG_PATH/imports"
 	
 	# iterate through all active plugins and initialize their additinal features
-	# touch "$CONFIGURATION_PATH/plugins/activated"
-	# for plugin in $(cat "$CONFIGURATION_PATH/plugins/activated"); do
+	# touch "$WS_CFG_PATH/plugins/activated"
+	# for plugin in $(cat "$WS_CFG_PATH/plugins/activated"); do
 	for plugin in _workspace_plugin_register_list; do
 		workspace_config_plugin init "$plugin"
 	done

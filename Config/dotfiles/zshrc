@@ -5,7 +5,12 @@ export ZSH=$HOME/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="gnzh"
+ZSH_THEME="gnzh-enhanced"
+
+# Setup workspace base path
+export WS_CFG_PATH="$HOME/Workspace/Config"
+# Tell zsh to create custom setup in config
+ZSH_CUSTOM="$WS_CFG_PATH/zsh-custom"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
@@ -19,13 +24,15 @@ HIST_STAMPS="mm/dd/yyyy"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git git-flow colored-man docker)
+plugins=(git git-flow docker venver)
 
 # load oh-my-zsh init script
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-export PATH=/usr/local/bin:$PATH
+# pushed to workspace config
+
+unset zle_bracketed_paste
 
 # load workspace config init script
-source $HOME/Workspace/Config/oninit
+source "$WS_CFG_PATH/oninit"
