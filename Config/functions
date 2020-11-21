@@ -1,5 +1,30 @@
 #!/bin/bash
 
+trim_video () {
+	case $1 in
+		cut)
+			ffmpeg -ss $3 -to $4 -i "$2" -acodec copy "$5"
+		;;
+		*)
+			echo "unreckognized command '$1'"
+		;;
+	esac
+}
+
+convert_to_gif () {
+	if [ $# -ne 2 ]; then
+		echo "convert_to_gif [IN_PATH] [OUT_PATH]"
+		return 1
+	fi
+
+	local in_file=$1
+	local out_file=$2
+
+	ffmpeg -i "$in_file" \
+		-filter_complex "[0:v] fps=12,scale=w=480:h=-1,split [a][b];[a] palettegen=stats_mode=single [p];[b][p] paletteuse=new=1" \
+		"$out_file"
+}
+
 convert_to_mp3 () {
 	if [ $# -ne 2 ]; then
 		echo "convert_to_mp3 [IN_PATH] [OUT_PATH]"
@@ -11,6 +36,26 @@ convert_to_mp3 () {
 
 	# -map a / strips artwork
 	ffmpeg -i "$in_file" -vn -ar 44100 -ac 2 -b:a 96k -map a "$out_file"
+
+	return $?
+}
+
+convert_to_mp4_gpu () {
+	if [ $# -ne 2 ]; then
+		echo "convert_to_mp4 [IN_PATH] [OUT_PATH]"
+		return 1
+	fi
+
+	# local base_path="$(dirname $1)"
+	# local filename_without_ext="$(basename $1 .mkv)"
+
+	# local in_file="$base_path/$filename_without_ext.mkv"
+	# local out_file="$base_path/$filename_without_ext.mp4"
+	local in_file=$1
+	local out_file=$2
+
+	#ffmpeg -i "$in_file" -c:v libx264 "$out_file"
+	ffmpeg -i "$in_file" -acodec copy -c:v h264_videotoolbox -pix_fmt yuv420p -profile:v main -level:v 3.1 "$out_file"
 
 	return $?
 }
