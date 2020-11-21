@@ -9,6 +9,7 @@ alias m='make'
 #python
 alias p='python3'
 alias pp='p -m pip'
+alias pv='p -m venv'
 
 # open files
 alias o='open'
