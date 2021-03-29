@@ -11,6 +11,7 @@
 	dt = difftool --no-prompt
 	e = config -e
 	c = checkout
+	cp = checkout -p
 	cb = checkout -b
 	a = add -v
 	af = add -vf
@@ -29,6 +30,7 @@
 	l  = log --color
 	la = log --graph --color --abbrev-commit --all
 	lav = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --all
+	laf = log --graph --color --abbrev-commit --all --name-status
 	hard = reset --hard
 	type = cat-file -t
 	dump = cat-file
