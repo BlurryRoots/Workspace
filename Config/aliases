@@ -1,5 +1,9 @@
 # aliases
 
+#navigation
+alias b='cd ..'
+alias bp='cd -'
+
 #git
 alias g='git'
 
