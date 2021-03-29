@@ -23,6 +23,14 @@ if [ -e $HOME/Library/Android/sdk ]; then
 	export ANDROID_HOME="$ANDROID_SDK_ROOT"
 fi
 
+# GO
+if [ -e $HOME/go ]; then
+	# Setup for go installation.
+	export GOROOT="$HOME/go"
+	export GOPATH="$HOME/go"
+	export PATH="$PATH:$GOROOT/bin"
+fi
+
 
 # extend path
 if [ -e /usr/local/bin ]; then
