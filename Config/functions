@@ -1,5 +1,31 @@
 #!/bin/bash
 
+# Activate or deactivate photoanalysisd agent.
+config_photoanalysis () {
+	case $1 in
+		off)
+			launchctl kill -STOP gui/$UID/com.apple.photoanalysisd
+		;;
+		on)
+			launchctl kill -CONT gui/$UID/com.apple.photoanalysisd
+		;;
+		*)
+			echo "unreckognized command '$1"
+			return 1
+		;;
+	esac
+}
+
+ws () {
+	cd "$WS_CFG_PATH/.."
+}
+
+# Shows all available targets within makefile.
+make_list_targets () {
+	make -f "$1" -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}' | sort -u
+}
+
+# Cuts off portion of a video at the front and back.
 trim_video () {
 	case $1 in
 		cut)
@@ -11,6 +37,7 @@ trim_video () {
 	esac
 }
 
+# Converts video to a series of images packaged in a gif container.
 convert_to_gif () {
 	if [ $# -ne 2 ]; then
 		echo "convert_to_gif [IN_PATH] [OUT_PATH]"
@@ -25,10 +52,11 @@ convert_to_gif () {
 		"$out_file"
 }
 
+# Exports up to 2 audio channels from input file and creates mp3 from it.
 convert_to_mp3 () {
 	if [ $# -ne 2 ]; then
 		echo "convert_to_mp3 [IN_PATH] [OUT_PATH]"
-		return 1
+		return $#
 	fi
 
 	local in_file=$1
@@ -40,6 +68,7 @@ convert_to_mp3 () {
 	return $?
 }
 
+# Converst input to mp4 using gpu acceleration.
 convert_to_mp4_gpu () {
 	if [ $# -ne 2 ]; then
 		echo "convert_to_mp4 [IN_PATH] [OUT_PATH]"
@@ -60,6 +89,7 @@ convert_to_mp4_gpu () {
 	return $?
 }
 
+# Converts input file to mp4.
 convert_to_mp4 () {
 	if [ $# -ne 2 ]; then
 		echo "convert_to_mp4 [IN_PATH] [OUT_PATH]"
@@ -168,19 +198,6 @@ who_uses_port () {
 
 	[ $? -eq 1 ] && {
 		echo "nobody uses port "$port
-	}
-}
-
-# brighter
-brighter () {
-	local loc=/sys/class/backlight/acpi_video0/brightness
-	local level
-
-	[ "$#" = "0" ] && {
-		level=`cat $loc`
-		echo $level
-	} || {
-		su -c "echo $1 > $loc"
 	}
 }
 
