@@ -17,7 +17,25 @@ if [ ! -e $HOME/.dmrc ]; then
 fi
 
 if [ ! -e $HOME/.gitconfig ]; then
-	ln -s $CONFIGURATION_PATH/dotfiles/gitconfig $HOME/.gitconfig
+	# setup live copy
+	cp -Rav "$CONFIGURATION_PATH/dotfiles/gitconfig" "$CONFIGURATION_PATH/live/gitconfig"
+	# query git default user
+local setup_default_user_code=$(cat << EOF
+import sys, configparser
+config = configparser.ConfigParser()
+config.read(sys.argv[1])
+user = { 
+	'name':  input('Default git user name: '), 
+	'email': input('Default git email:     ')
+}
+config['user'] = user
+with open(sys.argv[1], 'w') as f:
+	f.write(config)
+EOF
+)
+	python3 -c "$setup_default_user_code" "$CONFIGURATION_PATH/live/gitconfig"
+	# append to config file and write to home
+	ln -s $CONFIGURATION_PATH/live/gitconfig $HOME/.gitconfig
 fi
 
 if [ ! -e $HOME/.profile ]; then
