@@ -1,13 +1,117 @@
 #!/bin/bash
 
+list_installed_applications () {
+	for app in /Applications/*
+	do
+		mdls -name kMDItemCFBundleIdentifier "$app"
+	done
+}
+
+no_adobe_startup () {
+	launchctl unload -w {,~}/Library/LaunchAgents/com.adobe.*.plist
+	sudo launchctl unload -w /Library/LaunchDaemons/com.adobe.*.plist
+}
+
+set_spotlight_indexing () {
+	# off / on
+	sudo mdutil -a -i $1
+}
+
+fuck () {
+    while true
+    do
+        pkill mds mds_stores opendirectoryd auditd ReportCrash VTDecoderXPCService EmojiFunctionRowIM 2>&1 >> /dev/null
+        sleep 7
+    done
+}
+
+export FUCK=`declare -f fuck`
+
+make_timestamp () {
+	echo $(date "+%Y%m%d%H%M%S")
+}
+
+merge_to_mp3 () {
+	# inspired by https://kevcaz.github.io/notes/ffmpeg/concatenateaudiofiles/
+	mkdir -p /tmp/merge_to_mp3
+	local stamp=$(make_timestamp)
+	local tmppath=/tmp/merge_to_mp3/$stamp
+	mkdir $tmppath
+
+	local contextpath=$(dirname ${a[1]})
+
+	# convertion to pcm
+	for f in $@
+	do
+	  ffmpeg -i $f -c:a pcm_s16le -ac 2 -ar 48000 -f s16le $tmppath/${f%.*}.pcm
+	done
+
+	# concatenate files
+	cat $tmppath/*.pcm > $tmppath/RESULT_$stamp.pcm
+	ffmpeg -f s16le -ac 2 -ar 48000 -i $tmppath/RESULT_$stamp.pcm -ar 44100 -ac 2 -b:a 96k -map a "$contextpath/RESULT_$stamp.mp3"
+}
+
+config_service () {
+	case $2 in
+		off)
+			launchctl kill -STOP user/$(id -u)/com.apple.$1
+		;;
+		on)
+			launchctl kill -CONT user/$(id -u)/com.apple.$1
+		;;
+		*)
+			echo "unreckognized command '$2' for service '$1'"
+			return 1
+		;;
+	esac
+}
+
+no_crash_report () {
+	launchctl unload -w /System/Library/LaunchAgents/com.apple.ReportCrash.plist
+    sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.ReportCrash.Root.plist
+}
+
+fuckoff () {
+	launchctl kill -TERM user/$(id -u)/com.apple.photoanalysisd
+	launchctl disable user/$(id -u)/com.apple.photoanalyticsd
+	launchctl kill -TERM gui/$UID/com.apple.photoanalysisd
+	launchctl disable gui/$UID/com.apple.photoanalysisd
+
+	launchctl kill -TERM user/$(id -u)/com.apple.mediaanalysisd
+	launchctl disable user/$(id -u)/com.apple.mediaanalysisd
+	launchctl kill -TERM gui/$UID/com.apple.mediaanalysisd
+	launchctl disable gui/$UID/com.apple.mediaanalysisd
+
+	launchctl kill -TERM user/$(id -u)/com.apple.photolibraryd
+	launchctl disable user/$(id -u)/com.apple.photolibraryd
+	launchctl kill -TERM gui/$UID/com.apple.photolibraryd
+	launchctl disable gui/$UID/com.apple.photolibraryd
+}
+
+# Activate or deactivate mediaanalysisd agent.
+config_mediaanalysis () {
+	case $1 in
+		off)
+			launchctl kill -STOP user/$(id -u)/com.apple.mediaanalysisd
+		;;
+		on)
+			launchctl kill -CONT user/$(id -u)/com.apple.mediaanalysisd
+		;;
+		*)
+			echo "unreckognized command '$1"
+			return 1
+		;;
+	esac
+}
+
 # Activate or deactivate photoanalysisd agent.
 config_photoanalysis () {
 	case $1 in
 		off)
-			launchctl kill -STOP gui/$UID/com.apple.photoanalysisd
+			launchctl kill -STOP user/$(id -u)//com.apple.photoanalysisd
 		;;
 		on)
-			launchctl kill -CONT gui/$UID/com.apple.photoanalysisd
+			launchctl kill -CONT user/$(id -u)//com.apple.photoanalysisd
 		;;
 		*)
 			echo "unreckognized command '$1"
@@ -68,6 +172,21 @@ convert_to_mp3 () {
 	return $?
 }
 
+convert_to_pcm () {
+	if [ $# -ne 2 ]; then
+		echo "convert_to_pcm [IN_PATH] [OUT_PATH]"
+		return $#
+	fi
+
+	local in_file=$1
+	local out_file=$2
+
+	# -map a / strips artwork
+	ffmpeg -i "$in_file" -c:a pcm_s16le -ac 2 -ar 48000 -f s16le -map a "$out_file"
+
+	return $?
+}
+
 # Converst input to mp4 using gpu acceleration.
 convert_to_mp4_gpu () {
 	if [ $# -ne 2 ]; then
@@ -119,7 +238,7 @@ init_ssh () {
 	eval `ssh-agent` && (
 		for key in $(cat "$HOME/.ssh/keys"); do
 			ssh-add "$HOME/.ssh/$key"
-		done		
+		done
 	)
 }
 
