@@ -20,13 +20,27 @@ Path to corsica config file.
 
 ## Config
 
-Configures the rewrite rules.
+The origin path is defined as a regular expression.
+
+Simple rewrites.
 
 ```json
 {
 	"rewrites": {
 		"/readme": "/readme.md",
 		"/license": "/license.md"
+	}
+}
+```
+
+For more complex rules, you can use named groups.
+Reference the group name via pythons template variable syntax.
+
+```json
+{
+	"rewrites": {
+		"/(?P<mdfiles>readme|license)": "/${mdfiles}.md",
+		"/readme|license)": "/${mdfiles}.md"
 	}
 }
 ```

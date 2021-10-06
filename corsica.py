@@ -6,6 +6,20 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import argparse
 import os
 import json
+import urllib.parse
+import re
+from string import Template
+import sys
+
+
+def get_version():
+    return '0.8.7'
+
+
+_g_verbose = False
+def _vprint(*c):
+    if _g_verbose:
+        print(*c)
 
 
 class WorkingDirectory:
@@ -29,7 +43,13 @@ class Corsica(SimpleHTTPRequestHandler):
 
     def setup_configuration(self, configuration):
         """Reads rewrite rules from configuration"""
-        self.rewrites = configuration['rewrites'] if 'rewrites' in configuration else {}
+        self.rewrites = {}
+        rewrites = configuration['rewrites'] if 'rewrites' in configuration else {}
+        for k in rewrites.keys():
+            t = Template(rewrites[k])
+            r = re.compile(k)
+            _vprint(f'Setting up rule({r.pattern}) with template({t.template}).')
+            self.rewrites[r] = t
 
     def setup_server_path(self, server_path, execution_path):
         """Sets up exectution and server path"""
@@ -39,15 +59,18 @@ class Corsica(SimpleHTTPRequestHandler):
     def translate_path(self, path):
         """Override called when resource is requested and absolute path has to be constructed"""
 
-        # creates absulte path to requested resource
-        #path = super(Corsica, self).translate_path(path)
-
+        path_override = False
         # Changed relative path to rewrite rule if specified.
-        if path in self.rewrites:
-            print(f'Found rewrite {path} => {self.rewrites[path]}')
-            path = self.rewrites[path]
+        for rule in self.rewrites:
+            match = rule.match(path)
+            if match:
+                oldpath = path
+                path = self.rewrites[rule].safe_substitute(match.groupdict())
+                path_override = True
+                _vprint(f'Translating: {oldpath} => {path}')
+                break
 
-        return self.server_path + path
+        return urllib.parse.unquote(self.server_path + path)
 
     def end_headers(self):
         """Appends CORS headers to response."""
@@ -68,24 +91,74 @@ def build_corsica_handler_class(configuration, server_path, execution_path):
 
     class CorsicaArgumentWrapper(Corsica):
         def __init__(self, *args, **kwargs):
+            _vprint('Initializing CorsicaArgumentWrapper ...')
             self.setup_configuration(configuration)
             self.setup_server_path(server_path, execution_path)
             super(CorsicaArgumentWrapper, self).__init__(*args, **kwargs)
+
     return CorsicaArgumentWrapper
 
 
-class CorsicaServer(HTTPServer):
-    """Corsica HTTP server, using custom HTTP handler and rewrite and path configuration."""
-    def __init__(self, execution_path, server_path, server_address, configuration):
-        self.base_path = server_path
-        handler_class = build_corsica_handler_class(configuration, server_path, execution_path)
-        super(CorsicaServer, self).__init__(server_address, RequestHandlerClass=handler_class)
+def build_corsica_server_class(execution_path, server_path, server_address, configuration):
+    _vprint(f'Generator function for corsica server class ...')
+    handler_class = build_corsica_handler_class(configuration, server_path, execution_path)
+
+    class CorsicaServer(HTTPServer):        
+        """Corsica HTTP server, using custom HTTP handler and rewrite and path configuration."""
+        def __init__(self):#(self, execution_path, server_path, server_address, configuration):
+            self.base_path = server_path
+            super(CorsicaServer, self).__init__(server_address, RequestHandlerClass=handler_class)
+
+    return CorsicaServer
+
+
+def run_host_command(args):
+    # Change working directory context to configured server root.
+    with WorkingDirectory(args.server_root) as cwd:
+        # Construct configuration path relative or absolute and load.
+        configuration = None
+        if os.path.isabs(args.config):
+            configuration_path = args.config
+        else:
+            configuration_path = os.path.join(cwd.previous_path, args.config)
+
+        _vprint(f'Looking for a configuration file at {configuration_path} ...')
+
+        if os.path.exists(configuration_path):
+            with open(configuration_path, 'r') as cf:
+                configuration = json.loads(cf.read())
+        else:
+            _vprint(f'No configuration file found. Setting up defaults ...')
+            configuration = {}
+
+        # Build server location info (hostname, port).
+        location = (args.host, args.port)
+        print(f"Hosting directory ({os.getcwd()}) via: {location}")
+
+        # Start corsica server.
+        CorsicaServer = build_corsica_server_class(cwd.previous_path, os.getcwd(), location, configuration)
+        httpd = CorsicaServer()
+
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt as ki:
+            sys.exit(1)
+
+    return 0
 
 
 def main():
     """Main entry point of command line tool."""
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose'
+        , action='store_true'
+        , help='Activate verbose logging.'
+        , default=False)
+    parser.add_argument('-V', '--version'
+        , action='store_true'
+        , help='Show version number.'
+        , default=False)
     parser.add_argument('server_root',
         metavar='root', type=str, help='Server root directory.')
     parser.add_argument('--port',
@@ -97,25 +170,28 @@ def main():
 
     args = parser.parse_args()
 
-    # Change working directory context to configured server root.
-    with WorkingDirectory(args.server_root) as cwd:
-        # Construct configuration path relative or absolute and load.
-        configuration = None
-        if os.path.isabs(args.config):
-            configuration_path = args.config
-        else:
-            configuration_path = os.path.join(cwd.previous_path, args.config)
+    status = 0
 
-        with open(configuration_path, 'r') as cf:
-            configuration = json.loads(cf.read())
+    if args.version:
+        print(get_version())
+        sys.exit(status)
 
-        # Build server location info (hostname, port).
-        location = (args.host, args.port)
-        print(f"Hosting directory ({os.getcwd()}) server at: {location}")
+    commands = {
+        'host': run_host_command
+    }
 
-        # Start corsica server.
-        httpd = CorsicaServer(cwd.previous_path, os.getcwd(), location, configuration)
-        httpd.serve_forever()
+    # if not args.command in commands:
+    #     parser.print_help()
+    #     status = 1
+    # else:
+    #     status = commands[args.command](args)
+
+    global _g_verbose
+    _g_verbose = args.verbose
+
+    status = commands['host'](args)
+
+    sys.exit(status)
 
 
 if __name__ == '__main__':
