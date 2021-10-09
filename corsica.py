@@ -143,9 +143,10 @@ def run_host_command(args):
         CorsicaServer = build_corsica_server_class(cwd.previous_path, os.getcwd(), location, configuration)
         httpd = CorsicaServer()
 
-        if args.ssl:            
+        if args.ssl:
+            _vprint(f'Setting up ssl. Looking for key at {args.key_file} and certificate at {args.cert_file}')
             httpd.socket = ssl.wrap_socket (httpd.socket, 
-                certfile=args.pem_file, keyfile=args.key_file, server_side=True)
+                certfile=args.cert_file, keyfile=args.key_file, server_side=True)
 
         try:
             httpd.serve_forever()
@@ -182,7 +183,7 @@ def main():
         , action='store_true'
         , help='Use SSL / HTTPS.'
         , default=False)
-    parser.add_argument('--pem-file', metavar='pem_file'
+    parser.add_argument('--cert-file', metavar='cert_file'
         , type=str, default=os.path.join(project_path, 'corsica-cert.pem')
         , help='Path to ssl pem file. (default: corsica dev cert)')
     parser.add_argument('--key-file', metavar='key_file'
