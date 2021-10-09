@@ -8,8 +8,8 @@ local PR_USER PR_USER_OP PR_PROMPT PR_HOST
 
 # Check the UID
 if [[ $UID -ne 0 ]]; then # normal user
-  PR_USER='%F{green}%n%f'
-  PR_USER_OP='%F{green}%#%f'
+  PR_USER='%F{33FF10}%n%f'
+  PR_USER_OP='%F{33FF10}%#%f'
   PR_PROMPT='%f➤ %f'
 else # root
   PR_USER='%F{red}%n%f'
@@ -21,14 +21,14 @@ fi
 if [[ -n "$SSH_CLIENT"  ||  -n "$SSH2_CLIENT" ]]; then
   PR_HOST='%F{red}%M%f' # SSH
 else
-  PR_HOST='%F{green}%M%f' # no SSH
+  PR_HOST='%F{33FF10}%M%f' # no SSH
 fi
 
 
 local return_code="%(?..%F{red}%? ↵%f)"
 
-local user_host="${PR_USER}%F{cyan}@${PR_HOST}"
-local current_dir="%B%F{blue}%~%f%b"
+local user_host="${PR_USER}%F{10FF33}@${PR_HOST}"
+local current_dir="%B%F{red}%~%f%b"
 local rvm_ruby=''
 if ${HOME}/.rvm/bin/rvm-prompt &> /dev/null; then # detect user-local rvm installation
   rvm_ruby='%F{red}‹$(${HOME}/.rvm/bin/rvm-prompt i v g s)›%f'
@@ -44,8 +44,8 @@ if current_venv=$(venver_info); then
   current_venv="venv: $current_venv"
 fi
 
-PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_branch} $current_venv
-╰─$PR_PROMPT "
+PROMPT="╭${user_host} ${current_dir} ${rvm_ruby} ${git_branch} ${current_venv}
+╰$PR_PROMPT  "
 RPROMPT="${return_code}"
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%F{yellow}‹"
