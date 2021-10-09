@@ -1,3 +1,5 @@
-cors_dev_server_script=corsica.py
-cors_dev_server_path="$WS_MY_PLUGIN_ROOT/$cors_dev_server_script"
+cors_helfer_path="$WS_MY_PLUGIN_ROOT/corsica/helfer"
+cors_dev_server_path="$WS_MY_PLUGIN_ROOT/corsica/corsica.py"
 cors_link_target_path="$WS_CFG_PATH/bin/corsica"
+cors_SSL_KEY_PATH="$WS_MY_PLUGIN_ROOT/corsica-key.pem"
+cors_SSL_CER_PATH="$WS_MY_PLUGIN_ROOT/corsica-cert.pem"
