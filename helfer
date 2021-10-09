@@ -1,0 +1,6 @@
+corsica_generate_ssl_setup () {
+	openssl req -x509 -newkey rsa:4096 \
+			-keyout "$0" -out "$1" \
+			-days 24855 -nodes \
+			-subj "$2" -nodes
+}
