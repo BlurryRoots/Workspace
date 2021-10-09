@@ -1,0 +1,3 @@
+[submodule "Config/plugins/corsica"]
+	path = Config/plugins/corsica
+	url = https://github.com/BlurryRoots/ws-corsica
