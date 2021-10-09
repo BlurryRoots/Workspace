@@ -1,5 +1,21 @@
 #!/bin/bash
 
+set_boot_sound () {
+	# %00 %80 %01 " "
+	case $1 in
+		off)
+			sudo nvram SystemAudioVolume=" "
+		;;
+		on)
+			sudo nvram -d SystemAudioVolume
+		;;
+		*)
+			echo "unreckognized command '$1'. use either on or off"
+			return 1
+		;;
+	esac
+}
+
 list_installed_applications () {
 	for app in /Applications/*
 	do
@@ -187,6 +203,23 @@ convert_to_pcm () {
 	return $?
 }
 
+convert_to_wav () {
+	if [ $# -ne 2 ]; then
+		echo "convert_to_wav [IN_PATH] [OUT_PATH]"
+		return $#
+	fi
+
+	local in_file=$1
+	local out_file=$2
+
+	# -map a / strips artwork
+	ffmpeg -i "$in_file" -acodec pcm_mulaw -ac 2 -ar 44100 "$out_file"
+
+	return $?
+}
+
+
+
 # Converst input to mp4 using gpu acceleration.
 convert_to_mp4_gpu () {
 	if [ $# -ne 2 ]; then
@@ -264,9 +297,7 @@ calc () {
 		return 1
 	}
 
-	local stuff="scale=2; $1"
-
-	echo $stuff | bc
+	echo "phi=(sqrt(5)+1)/2;phi1=phi-1;phi1i=1-phi1;pi=4*a(1);tau=2*pi; $1" | bc -l
 }
 
 #
