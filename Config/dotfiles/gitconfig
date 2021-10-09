@@ -31,6 +31,7 @@
 	la = log --graph --color --abbrev-commit --all
 	lav = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --all
 	laf = log --graph --color --abbrev-commit --all --name-status
+	lfh = log --follow -p --
 	hard = reset --hard
 	type = cat-file -t
 	dump = cat-file
