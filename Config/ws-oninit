@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # check if library iis already loaded
-if [ ! -n "$WS_CFG_PATH" ]; then
-	source "$(dirname $0)/ws-shared"
+if [ ! -n "$WS_CFG_SHARED_IS_READY" ]; then
+	source "$(realpath $(dirname $0))/ws-shared"
 fi
 
 # plugin control functions

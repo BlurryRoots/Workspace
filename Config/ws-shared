@@ -55,22 +55,22 @@ _ws_should_log () {
 
 _ws_log () {
 	local lowercase_cmd=$(_ws_to_lower "$1")
-	local should_log=1
+	local should_log=0
 	local rvalue=0
 	case "$lowercase_cmd" in
 		"verbose" )
 			if _ws_should_log $_WS_CFG_LOG_VERBOSE; then
-				should_log=0
+				should_log=1
 			fi
 		;;
 		"warning" )
 			if _ws_should_log $_WS_CFG_LOG_WARN; then
-				should_log=0
+				should_log=1
 			fi
 		;;
 		"error" )
 			if _ws_should_log $_WS_CFG_LOG_ERROR; then
-				should_log=0
+				should_log=1
 			fi
 		;;
 		* )
@@ -79,7 +79,7 @@ _ws_log () {
 		;;
 	esac
 
-	[ 0 = $should_log ] && echo "log($lowercase_cmd): ${@:2}"
+	[ 1 = $should_log ] && echo "log($lowercase_cmd): ${@:2}"
 
 	return $rvalue
 }
