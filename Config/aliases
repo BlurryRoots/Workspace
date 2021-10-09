@@ -1,5 +1,8 @@
 # aliases
 
+#fd without ignore files by default
+alias fd='fd --no-ignore-vcs'
+
 #navigation
 alias b='cd ..'
 alias bp='cd -'
