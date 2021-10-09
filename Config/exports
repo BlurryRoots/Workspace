@@ -41,11 +41,15 @@ if [ -e $HOME/Workspace/Binaries ]; then
 fi
 if [ -e $ANDROID_SDK_ROOT/emulator ]; then
 	export PATH="$ANDROID_SDK_ROOT/emulator:$PATH"
-	export PATH="/Users/tesseract/Library/Android/sdk/platform-tools/platform-tools:$PATH"
+	export PATH="$HOME/Library/Android/sdk/platform-tools/platform-tools:$PATH"
 fi
 if [ -e $HOME/Workspace/Libraries/google-app-engine-python ]; then
 	export PATH="$HOME/Workspace/Libraries/google-app-engine-python:$PATH"
 fi
+if [ -e "$HOME/.pyenv" ]; then
+	export PATH="$HOME/.pyenv/shims:${PATH}"
+fi
+
 
 # set shell
 if [ -n "$SHELL" ]; then
