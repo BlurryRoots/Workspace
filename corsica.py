@@ -10,10 +10,14 @@ import urllib.parse
 import re
 from string import Template
 import sys
+import ssl
+
+
+project_path = os.path.dirname(os.path.realpath(__file__))
 
 
 def get_version():
-    return '0.8.7'
+    return '0.9.1'
 
 
 _g_verbose = False
@@ -139,6 +143,10 @@ def run_host_command(args):
         CorsicaServer = build_corsica_server_class(cwd.previous_path, os.getcwd(), location, configuration)
         httpd = CorsicaServer()
 
+        if args.ssl:            
+            httpd.socket = ssl.wrap_socket (httpd.socket, 
+                certfile=args.pem_file, keyfile=args.key_file, server_side=True)
+
         try:
             httpd.serve_forever()
         except KeyboardInterrupt as ki:
@@ -159,14 +167,28 @@ def main():
         , action='store_true'
         , help='Show version number.'
         , default=False)
-    parser.add_argument('server_root',
-        metavar='root', type=str, help='Server root directory.')
+    parser.add_argument('server_root', metavar='root'
+        , type=str
+        , help='Server root directory.')
     parser.add_argument('--port',
         metavar='port', type=int, help='Port to host on.', default=8080)
-    parser.add_argument('--host',
-        metavar='host', type=str, help='Hostname.', default='localhost')
-    parser.add_argument('--config',
-        metavar='config', type=str, help='Path to configuration file.', default='./corsica.conf')
+    parser.add_argument('--host', metavar='host', type=str
+        , default='localhost'
+        , help='Hostname.')
+    parser.add_argument('--config',  metavar='config'
+        , type=str, default='./corsica.conf'
+        , help='Path to configuration file.')
+    parser.add_argument('-S', '--ssl'
+        , action='store_true'
+        , help='Use SSL / HTTPS.'
+        , default=False)
+    parser.add_argument('--pem-file', metavar='pem_file'
+        , type=str, default=os.path.join(project_path, 'corsica-cert.pem')
+        , help='Path to ssl pem file. (default: corsica dev cert)')
+    parser.add_argument('--key-file', metavar='key_file'
+        , type=str, default=os.path.join(project_path, 'corsica-key.pem')
+        , help='Path to ssl key file. (default: corsica dev key)')
+    
 
     args = parser.parse_args()
 
