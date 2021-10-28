@@ -48,12 +48,36 @@ class Corsica(SimpleHTTPRequestHandler):
     def setup_configuration(self, configuration):
         """Reads rewrite rules from configuration"""
         self.rewrites = {}
-        rewrites = configuration['rewrites'] if 'rewrites' in configuration else {}
+        rewrites = configuration['rewrites'] \
+            if 'rewrites' in configuration \
+            else {}
         for k in rewrites.keys():
             t = Template(rewrites[k])
             r = re.compile(k)
             _vprint(f'Setting up rule({r.pattern}) with template({t.template}).')
             self.rewrites[r] = t
+
+        self.allowed_origin = configuration['origin'] \
+            if 'origin' in configuration \
+            else '*'
+
+        self.allowed_methods = []
+        methods = configuration['methods'] \
+            if 'methods' in configuration \
+            else ['*']
+        for m in methods:
+            self.allowed_methods.append(m.upper())
+
+        self.allowed_headers = []
+        headers = configuration['headers'] \
+            if 'headers' in configuration \
+            else ['*']
+        for h in headers:
+            self.allowed_headers.append(h)
+
+        self.cc = configuration['cache'] \
+            if 'cache' in configuration \
+            else ['no-store', 'no-cache', 'must-revalidate']
 
     def setup_server_path(self, server_path, execution_path):
         """Sets up exectution and server path"""
@@ -73,18 +97,22 @@ class Corsica(SimpleHTTPRequestHandler):
                 path_override = True
                 _vprint(f'Translating: {oldpath} => {path}')
                 break
-
-        return urllib.parse.unquote(self.server_path + path)
+        ur = self.server_path + path
+        u = urllib.parse.urlparse(urllib.parse.unquote(ur))
+        _vprint(f'{ur} => {u}')
+        return u.path
 
     def end_headers(self):
         """Appends CORS headers to response."""
 
-        # Allow CORS from all origins.
-        self.send_header('Access-Control-Allow-Origin', '*')
-        # For GET method.
-        self.send_header('Access-Control-Allow-Methods', 'GET')
-        # And disable caching.
-        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        # Where do we come from anyways?
+        self.send_header('Access-Control-Allow-Origin', self.allowed_origin)
+        # Your method of choice.
+        self.send_header('Access-Control-Allow-Methods', ', '.join(self.allowed_methods))
+        # Don't lose your head(er).
+        self.send_header('Access-Control-Allow-Headers', ', '.join(self.allowed_headers))
+        # Doin' some cachin', eh?!
+        self.send_header('Cache-Control', ', '.join(self.cc))
 
         # Return full header collection.
         return super().end_headers()
@@ -189,11 +217,14 @@ def main():
     parser.add_argument('--key-file', metavar='key_file'
         , type=str, default=os.path.join(project_path, 'corsica-key.pem')
         , help='Path to ssl key file. (default: corsica dev key)')
-    
 
     args = parser.parse_args()
-
+    
+    command = 'host'
     status = 0
+
+    global _g_verbose
+    _g_verbose = args.verbose
 
     if args.version:
         print(get_version())
@@ -203,16 +234,11 @@ def main():
         'host': run_host_command
     }
 
-    # if not args.command in commands:
-    #     parser.print_help()
-    #     status = 1
-    # else:
-    #     status = commands[args.command](args)
-
-    global _g_verbose
-    _g_verbose = args.verbose
-
-    status = commands['host'](args)
+    if not command in commands:
+        parser.print_help()
+        status = 1
+    else:
+        status = commands[command](args)
 
     sys.exit(status)
 
