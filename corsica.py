@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # encoding: utf-8
-"""Minimalistic replacement for simple `python3 -m http.server` development servers when you need CORS or rewrite rules."""
+"""
+Minimalistic replacement for simple `python3 -m http.server`
+development servers when you need CORS or rewrite rules.
+
+Copyright (c) blurryroots innovation qanat OÜ
+"""
 
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import argparse
@@ -136,8 +141,9 @@ def build_corsica_server_class(execution_path, server_path, server_address, conf
     handler_class = build_corsica_handler_class(configuration, server_path, execution_path)
 
     class CorsicaServer(HTTPServer):        
-        """Corsica HTTP server, using custom HTTP handler and rewrite and path configuration."""
-        def __init__(self):#(self, execution_path, server_path, server_address, configuration):
+        """Corsica HTTP server, using custom HTTP handler and rewrite and
+           path configuration."""
+        def __init__(self):
             self.base_path = server_path
             super(CorsicaServer, self).__init__(server_address, RequestHandlerClass=handler_class)
 

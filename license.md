@@ -1,6 +1,6 @@
 corsica
 
-Copyright (c) blurryroots innovation qanat OÜ, 2020
+Copyright (c) blurryroots innovation qanat OÜ
 
 All rights reserved.
 
