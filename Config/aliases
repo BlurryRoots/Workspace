@@ -1,7 +1,7 @@
 # aliases
 
 #fd without ignore files by default
-alias fd='fd --no-ignore-vcs'
+alias fd='fd --no-ignore-vcs --hidden'
 
 #navigation
 alias b='cd ..'
@@ -22,7 +22,6 @@ alias pv='p -m venv'
 alias o='open'
 
 # nicer ls
-#alias ls='/bin/ls'
 unalias ls
 alias ls='ls -G'
 alias ll='ls -lh -F'
@@ -44,14 +43,6 @@ alias rr='rm -r'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-
-alias uuidof='blkid'
-alias fh='find_here'
-
-alias tor='$HOME/Applications/Tor-Browser/./start-tor-browser'
-
-alias checkout='$HOME/Workspace/Scripts/./checkout.sh'
-alias yt-mpv='$HOME/Workspace/Script/./yt-mpv.sh'
 
 # equal rights !!! xD
 alias woman='man'
