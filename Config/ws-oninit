@@ -87,7 +87,7 @@ workspace_config_plugin () {
 				subcommand_code=815
 		esac
 
-		unset WS_MY_PLUGIN_ROOTs
+		unset WS_MY_PLUGIN_ROOT
 	fi
 
 	case "$1" in
