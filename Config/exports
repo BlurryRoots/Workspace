@@ -24,13 +24,12 @@ if [ -e $HOME/Library/Android/sdk ]; then
 fi
 
 # GO
-if [ -e $HOME/go ]; then
-	# Setup for go installation.
-	export GOROOT="$HOME/go"
-	export GOPATH="$HOME/go"
-	export PATH="$PATH:$GOROOT/bin"
+if [ -e "$HOME/Workspace/Go" ]; then
+	export GOPATH="$HOME/Workspace/Go"
+	export PATH="$PATH:$GOPATH/bin"
+else
+	echo "Missing go path! (Expected: \$HOME/Workspace/Go)"
 fi
-
 
 # extend path
 if [ -e /usr/local/bin ]; then
@@ -49,7 +48,17 @@ fi
 if [ -e "$HOME/.pyenv" ]; then
 	export PATH="$HOME/.pyenv/shims:${PATH}"
 fi
+if [ -e "/usr/local/opt/qt/bin" ]; then
+	export PATH="/usr/local/opt/qt/bin:${PATH}"
+fi
+if [ -e "$HOME/.cargo/bin" ]; then
+	export PATH="$HOME/.cargo/bin:${PATH}"
+fi
 
+# NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
 
 # set shell
 if [ -n "$SHELL" ]; then
