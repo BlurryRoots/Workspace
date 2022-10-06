@@ -1,4 +1,5 @@
 # setup shell options
+# option
 
 # for compatibility with zsh
 #setopt extendedglob
