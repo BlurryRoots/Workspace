@@ -63,7 +63,7 @@ workspace_config_plugin () {
 				;;
 			"init" )
 				_ws_log verbose "Initializing $2 ..."
-				_workspace_plugin_register_contains "$2" && if [ -e "$plugin_base_path/init" ] && source "$plugin_base_path/init"
+				_workspace_plugin_register_contains "$2" && [ -e "$plugin_base_path/init" ] && source "$plugin_base_path/init"
 				subcommand_code=$?
 				;;
 			"uninstall" )

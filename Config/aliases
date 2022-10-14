@@ -1,7 +1,7 @@
 # aliases
 
 #fd without ignore files by default
-alias fd='fd --no-ignore-vcs --hidden'
+alias fd='fdfind --no-ignore-vcs --hidden'
 
 #navigation
 alias b='cd ..'
@@ -23,7 +23,7 @@ alias o='open'
 
 # nicer ls
 unalias ls
-alias ls='ls -G'
+alias ls='ls -G --color=auto'
 alias ll='ls -lh -F'
 alias lav='ls -lAh -F'
 alias lavt='ls -lAh -F -t'

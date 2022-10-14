@@ -16,4 +16,4 @@
 #shopt -s hostcomplete
 #shopt -s nocaseglob
 
-setopt interactivecomments
+#setopt interactivecomments

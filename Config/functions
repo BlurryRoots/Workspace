@@ -573,6 +573,8 @@ top_biggies () {
 #
 git-custom-rm-submodule () {
 	if [ $# -ne 2 ]; then
+		echo "Please specify submodule name!"
+		exit		
 	fi
 
 	git submodule deinit -f -- "$1"

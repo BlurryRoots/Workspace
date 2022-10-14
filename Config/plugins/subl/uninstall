@@ -1,4 +1,5 @@
 #!/bin/zsh
+
 source $WS_CFG_PATH/ws-shared
 source $WS_MY_PLUGIN_ROOT/shared
 
