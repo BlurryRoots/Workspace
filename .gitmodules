@@ -7,3 +7,6 @@
 [submodule "Config/plugins/qpaeq-ctl"]
 	path = Config/plugins/qpaeq-ctl
 	url = https://github.com/BlurryRoots/ws-qpaeq-ctl
+[submodule "Config/plugins/goggy"]
+	path = Config/plugins/goggy
+	url = https://github.com/BlurryRoots/ws-goggy
