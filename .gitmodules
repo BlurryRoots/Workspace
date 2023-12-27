@@ -1,3 +1,6 @@
 [submodule "Config/plugins/corsica"]
 	path = Config/plugins/corsica
 	url = https://github.com/BlurryRoots/ws-corsica
+[submodule "Config/plugins/swap-ctl"]
+	path = Config/plugins/swap-ctl
+	url = https://github.com/BlurryRoots/ws-swap-ctl
