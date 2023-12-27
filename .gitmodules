@@ -4,3 +4,6 @@
 [submodule "Config/plugins/swap-ctl"]
 	path = Config/plugins/swap-ctl
 	url = https://github.com/BlurryRoots/ws-swap-ctl
+[submodule "Config/plugins/qpaeq-ctl"]
+	path = Config/plugins/qpaeq-ctl
+	url = https://github.com/BlurryRoots/ws-qpaeq-ctl
