@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 # run config init script
 source "$WS_CFG_PATH/ws-shared"
 source "$WS_CFG_PATH/ws-oninit"

@@ -6,23 +6,23 @@ if [ ! -n "$WS_CFG_SHARED_IS_READY" ]; then
 fi
 
 # plugin control functions
-workspace_config_plugin () {	
+workspace_config_plugin () {
 	if [ 0 = $# ]; then
-		_ws_log error "no command provided" >&2
+		_ws_log error "usage: $0 <command>\ncommands: [install,reinstal,uninstall,init,list]"
 		return 1
 	fi
 
 	_workspace_plugin_register_trim
 
 	case "$1" in
-		"list" )
+		l|list)
 			_workspace_plugin_register_list
 			return 0
 		;;
 	esac
 
 	if ((2 != $#)); then
-		_ws_log error "no plugin name provided" >&2
+		_ws_log error "no plugin name provided"
 		return 1
 	fi
 
@@ -33,24 +33,30 @@ workspace_config_plugin () {
 	if [ -e "$plugin_base_path" ]; then
 		export WS_MY_PLUGIN_ROOT="$plugin_base_path"
 		case "$1" in
-			"install" )
+			"i"|"install" )
 				if _workspace_plugin_register_contains "$2"; then
-					_ws_log error "$2 already installed, skipping ..." >&2
+					_ws_log error "$2 already installed, skipping ..."
 					subcommand_code=42
 				else
 					if [ -e "$plugin_base_path/install" ]; then
 						_ws_log verbose "installing $2 ..."
 					 	"$plugin_base_path"/./install
-					 	_ws_log verbose "adding $2 to register ..."
-						_workspace_plugin_register_append "$2"
-						subcommand_code=$?
+					 	[ 0 -eq $? ] && {
+						 	_ws_log verbose "adding $2 to register ..."
+							_workspace_plugin_register_append "$2"
+							subcommand_code=$?
+					 	} || {
+							_ws_log error "install failed. aborting ..."
+					 		subcommand_code=1336
+					 	}
+
 					else
-						_ws_log error "missing install script for $2" >&2
+						_ws_log error "missing install script for $2"
 						subcommand_code=1336
 					fi
 				fi
 				;;
-			"reinstall" )
+			"r"|"reinstall" )
 				export WS_PLUGIN_IGNORE_PUSHD=0
 				workspace_config_plugin uninstall "$2"
 				if [[ 0 == $? || 23 == $? ]]; then # 23 means has not been active
@@ -61,12 +67,12 @@ workspace_config_plugin () {
 				subcommand_code=$?
 				unset WS_PLUGIN_IGNORE_PUSHD
 				;;
-			"init" )
+			"I"|"init" )
 				_ws_log verbose "Initializing $2 ..."
 				_workspace_plugin_register_contains "$2" && [ -e "$plugin_base_path/init" ] && source "$plugin_base_path/init"
 				subcommand_code=$?
 				;;
-			"uninstall" )
+			"u"|"uninstall" )
 				if _workspace_plugin_register_contains "$2"; then
 					_ws_log verbose "uninstalling $2 ..."
 					if [ -e "$plugin_base_path/uninstall" ]; then
@@ -74,16 +80,16 @@ workspace_config_plugin () {
 						"$plugin_base_path"/./uninstall
 						subcommand_code=$?
 					else
-						echo "uninstall script missing for $2" >&2
+						echo "uninstall script missing for $2"
 						subcommand_code=1377
 					fi
 				else
-					_ws_log warning "$2 not active, skipping uninstall ..." >&2
+					_ws_log warning "$2 not active, skipping uninstall ..."
 					subcommand_code=23
 				fi
 				;;
 			* )
-				_ws_log error "unknown command $1, skipping operation" >&2
+				_ws_log error "unknown command $1, skipping operation"
 				subcommand_code=815
 		esac
 
@@ -91,15 +97,15 @@ workspace_config_plugin () {
 	fi
 
 	case "$1" in
-		"uninstall" )
+		"u"|"uninstall" )
 			if _workspace_plugin_register_contains "$2"; then
 				_ws_log verbose "removing $2 from register ..."
 				_workspace_plugin_register_remove "$2"
 			else
-				_ws_log warning "$2 is not in register, skipping removal ..." >&2
+				_ws_log warning "$2 is not in register, skipping removal ..."
 			fi
 		;;
-		"list" )
+		"l"|"list" )
 			_workspace_plugin_register_list
 		;;
 	esac
@@ -111,6 +117,8 @@ workspace_config_plugin () {
 
 # define function ws control function
 workspace_config_load () {
+	_ws_log verbose "Reloading workspace config ..."
+
 	# setup dotfiles
 	source "$WS_CFG_PATH/link-dotfiles"
 
@@ -135,6 +143,49 @@ workspace_config_load () {
 	for plugin in $(_workspace_plugin_register_list); do
 		workspace_config_plugin init "$plugin"
 	done
+}
+
+ws () {
+	if (( 0 == $# )); then
+		_ws_log error "usage: $0 <command> [args]"
+		return 1
+	fi
+
+	local r=0
+	case "$1" in
+		c|config)
+			if (( 1 > $# )); then
+				_ws_log error "usage: $0 config <command>\ncommands: [load]"
+				return 1
+			fi
+
+			shift
+			case "$1" in
+				l|load)
+					workspace_config_load
+					r=$?
+				;;
+				p|path)
+					echo ${WS_CFG_PATH}
+				;;
+				*)
+					_ws_log error "usage: $0 config <command>\ncommands: [load,path]"
+					r=13
+				;;
+			esac
+		;;
+		p|plugin)
+			shift
+			workspace_config_plugin $*
+		;;
+		*)
+			_ws_log error "usage: $0 <command> [args]"
+			r=13
+		;;
+	esac
+
+	return r
+	
 }
 
 # and call it

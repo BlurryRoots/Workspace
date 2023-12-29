@@ -38,7 +38,7 @@ _workspace_plugin_register_remove () {
 	# remove occurances of pattern in place
 	sed -i -e "$sed_pattern" "$WS_CFG_PLUGIN_REGISTER_PATH"
 	# sed creates a backup file, remove it
-	rm "$WS_CFG_PLUGIN_PATH/activated-e"	
+	rm -f "$WS_CFG_PLUGIN_PATH/activated-e"	
 }
 
 _ws_to_lower () {
@@ -57,29 +57,35 @@ _ws_log () {
 	local lowercase_cmd=$(_ws_to_lower "$1")
 	local should_log=0
 	local rvalue=0
+	local redirect=>&2
 	case "$lowercase_cmd" in
-		"verbose" )
+		"verbose")
 			if _ws_should_log $_WS_CFG_LOG_VERBOSE; then
 				should_log=1
 			fi
 		;;
-		"warning" )
+		"info")
+			if _ws_should_log $_WS_CFG_LOG_INFO; then
+				should_log=1
+			fi
+		;;
+		"warning")
 			if _ws_should_log $_WS_CFG_LOG_WARN; then
 				should_log=1
 			fi
 		;;
-		"error" )
+		"error")
 			if _ws_should_log $_WS_CFG_LOG_ERROR; then
 				should_log=1
 			fi
 		;;
 		* )
-			echo "unknown loglevel $lowercase_cmd" >&2
+			echo "unknown loglevel $lowercase_cmd" ${redirect}
 			rvalue=1
 		;;
 	esac
 
-	[ 1 = $should_log ] && echo "log($lowercase_cmd): ${@:2}"
+	[ 1 = $should_log ] && echo "log($lowercase_cmd): ${@:2}" ${redirect}
 
 	return $rvalue
 }
