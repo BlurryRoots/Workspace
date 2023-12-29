@@ -4,6 +4,8 @@
 	branch = auto
 
 [alias]
+	# thanks to https://stackoverflow.com/a/377293
+    serve = !git daemon --reuseaddr --verbose --base-path=. --export-all ./.git
 	mg = merge --no-ff
 	r = remote
 	d = diff
@@ -35,12 +37,15 @@
 	hard = reset --hard
 	type = cat-file -t
 	dump = cat-file
+
 [core]
 	editor = subl -a -w
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
 [init]
 	defaultBranch = main
