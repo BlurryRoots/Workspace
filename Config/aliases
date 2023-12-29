@@ -1,7 +1,18 @@
+#!/bin/zsh
 # aliases
+
+# muscle memory
+alias open='xdg-open'
+alias o='open'
 
 #fd without ignore files by default
 alias fd='fdfind --no-ignore-vcs --hidden'
+alias fdig="fd -ig"
+
+#rnr always in action mode and no dumps
+alias rn='rnr -f --no-dump'
+alias rn-file='rnr -f --no-dump'
+alias rn-dir='rnr -D -f --no-dump'
 
 #navigation
 alias b='cd ..'
@@ -16,16 +27,16 @@ alias m='make'
 #python
 alias p='python3'
 alias pp='p -m pip'
-alias pv='p -m venv'
 
 # open files
 alias o='open'
 
 # nicer ls
-unalias ls
+alias ls > /dev/null && unalias ls
 alias ls='ls -G --color=auto'
 alias ll='ls -lh -F'
 alias lav='ls -lAh -F'
+alias lavs='ls -lSAh -F'
 alias lavt='ls -lAh -F -t'
 alias la='ls -1hs -F'
 # confirm before overwriting something
