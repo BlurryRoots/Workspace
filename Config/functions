@@ -1,16 +1,113 @@
 #!/bin/bash
 
-please_be_fucked () {
-	while true; do (ps -A | grep "$1" | awk '{print $1}' | sudo xargs -I'{}' kill -9 {}); sleep 0.618; done
+bg-jobs-list () {
+	ps -eo pid,pgid,tpgid,args | awk 'NR == 1 || ($3 != -1 && $2 != $3)'
 }
 
-convert_to_frames () {
-	ffmpeg -i "$1" -vf fps=30 out%d.png
-	# ffprobe -v 0 -of compact=p=0 -select_streams 0 -show_entries stream=r_frame_rate 'The Master (2012).mp4'
+reload-touchpad () {
+	#sudo rmmod psmouse
+	sudo modprobe psmouse synaptics_intertouch=1
 }
 
-convert_from_frames () {
-	ffmpeg -framerate 30 -pattern_type glob -i '*.png' -c:v libx264 -pix_fmt yuv420p out.mp4
+colorgrid () {
+	#https://unix.stackexchange.com/a/285956
+	local first=16
+	local second=0
+	local third=0
+	local four=0
+	local five=0
+	local six=0
+	local seven=0
+
+	while [ ${first} -lt 52 ]; do
+		second=$[${first} + 36]
+		third=$[${second} + 36]
+		four=$[${third} + 36]
+		five=$[${four} + 36]
+		six=$[${five} + 36]
+		seven=$[${six} + 36]
+		if [ ${seven} -gt 250 ];then seven=$[${seven} - 251]; fi
+
+		echo -en "   \033[38;5;$(echo ${first})m█ "
+		printf "%03d" ${first}
+		echo -en "   \033[38;5;$(echo ${second})m█ "
+		printf "%03d" ${second}
+		echo -en "   \033[38;5;$(echo ${third})m█ "
+		printf "%03d" ${third}
+		echo -en "   \033[38;5;$(echo ${four})m█ "
+		printf "%03d" ${four}
+		echo -en "   \033[38;5;$(echo ${five})m█ "
+		printf "%03d" ${five}
+		echo -en "   \033[38;5;$(echo ${six})m█ "
+		printf "%03d" ${six}
+		echo -en "   \033[38;5;$(echo ${seven})m█ "
+		printf "%03d" ${seven}
+
+		first=$[${first} + 1]
+		printf '\r\n'
+	done
+
+	return 0
+}
+
+coredump-list () {
+	sudo ls -lav /var/lib/apport/coredump
+}
+
+coredump-clean () {
+	sudo rm -rf /var/lib/apport/coredump/*
+}
+
+berg () {
+	case $1 in
+		auf)
+			sudo mkdir -p /media/sol/Windows
+			sudo mount -o permissions,rw /dev/nvme0n1p3 /media/sol/Windows && \
+				echo "Mount '/media/sol/Windows' ready."
+		;;
+		ab)
+			sudo umount /media/sol/Windows && \
+				echo "Mount '/media/sol/Windows' released."
+		;;
+		*)
+			echo "unreckognized command '$1'. use either auf or ab"
+			return 1
+		;;
+	esac
+
+	return $?
+}
+
+fix-gpu-path () {
+	local device_id=pci0000:00/0000:00:01.0/0000:01:00.0
+	sudo \
+		echo 1 > "/sys/devices/${device_id}/remove" \
+	&&  echo 1 > "/sys/bus/pci/rescan"
+
+	sudo ls -lav "/sys/devices/${device_id}/remove"
+	sudo ls -lav "/sys/bus/pci/rescan"
+}
+
+python3-list-packages () {
+	python3 -c "for dist in __import__('pkg_resources').working_set: print (dist.project_name.replace('Python', ''))"
+}
+
+portable_nproc () {
+	# thanks to https://stackoverflow.com/a/45181694
+	OS="$(uname -s)"
+	if [ "$OS" = "Linux" ]; then
+		NPROCS="$(nproc --all)"
+	elif [ "$OS" = "Darwin" ] || \
+		 [ "$(echo "$OS" | grep -q BSD)" = "BSD" ]; then
+		NPROCS="$(sysctl -n hw.ncpu)"
+	else
+		NPROCS="$(getconf _NPROCESSORS_ONLN)"  # glibc/coreutils fallback
+	fi
+	echo "$NPROCS"
+}
+
+get_processor_count () {
+	portable_nproc
 }
 
 cleanup_metadata () {
@@ -64,7 +161,7 @@ cleanup_pdf () {
 
 	  # remove the temporary file if it already exists
 	  if [ -f "$TMP" ]; then
-	      rm "$TMP";
+		  rm "$TMP";
 	  fi
 
 	  exiftool -q -q -all:all= "$i" -o "$TMP"
@@ -100,35 +197,6 @@ list_installed_applications () {
 	done
 }
 
-no_adobe_startup () {
-	launchctl unload -w {,~}/Library/LaunchAgents/com.adobe.*.plist
-	sudo launchctl unload -w /Library/LaunchDaemons/com.adobe.*.plist
-}
-
-set_spotlight_indexing () {
-	# off / on
-	sudo mdutil -a -i $1
-}
-
-serene () {
-	while true
-    do
-        pkill IMRemoteURLConnectionAgent 2>&1 >> /dev/null
-        sleep 7
-    done
-}
-export SERENE=`declare -f serene`
-
-fuck () {
-    while true
-    do
-        pkill mds mds_stores opendirectoryd auditd ReportCrash VTDecoderXPCService EmojiFunctionRowIM 2>&1 >> /dev/null
-        sleep 7
-    done
-}
-
-export FUCK=`declare -f fuck`
-
 make_timestamp () {
 	echo $(date "+%Y%m%d%H%M%S")
 }
@@ -158,21 +226,6 @@ merge_to_mp3 () {
 	ffmpeg -f s16le -ac 2 -ar 48000 -i $tmppath/RESULT_$stamp.pcm -ar 44100 -ac 2 -b:a 96k -map a "$contextpath/RESULT_$stamp.mp3"
 }
 
-config_service () {
-	case $2 in
-		off)
-			launchctl kill -STOP user/$(id -u)/com.apple.$1
-		;;
-		on)
-			launchctl kill -CONT user/$(id -u)/com.apple.$1
-		;;
-		*)
-			echo "unreckognized command '$2' for service '$1'"
-			return 1
-		;;
-	esac
-}
-
 veedio () {
 	case $1 in
 		(cut) ffmpeg -ss $3 -to $4 -i "$2" -vn -ar 44100 -ac 2 -b:a 96k -map a "$5" ;;
@@ -182,24 +235,7 @@ veedio () {
 
 no_crash_report () {
 	launchctl unload -w /System/Library/LaunchAgents/com.apple.ReportCrash.plist
-    sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.ReportCrash.Root.plist
-}
-
-fuckoff () {
-	launchctl kill -TERM user/$(id -u)/com.apple.photoanalysisd
-	launchctl disable user/$(id -u)/com.apple.photoanalyticsd
-	launchctl kill -TERM gui/$UID/com.apple.photoanalysisd
-	launchctl disable gui/$UID/com.apple.photoanalysisd
-
-	launchctl kill -TERM user/$(id -u)/com.apple.mediaanalysisd
-	launchctl disable user/$(id -u)/com.apple.mediaanalysisd
-	launchctl kill -TERM gui/$UID/com.apple.mediaanalysisd
-	launchctl disable gui/$UID/com.apple.mediaanalysisd
-
-	launchctl kill -TERM user/$(id -u)/com.apple.photolibraryd
-	launchctl disable user/$(id -u)/com.apple.photolibraryd
-	launchctl kill -TERM gui/$UID/com.apple.photolibraryd
-	launchctl disable gui/$UID/com.apple.photolibraryd
+	sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.ReportCrash.Root.plist
 }
 
 # Activate or deactivate mediaanalysisd agent.
@@ -234,10 +270,6 @@ config_photoanalysis () {
 	esac
 }
 
-ws () {
-	cd "$WS_CFG_PATH/.."
-}
-
 # Shows all available targets within makefile.
 make_list_targets () {
 	make -f "$1" -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}' | sort -u
@@ -255,6 +287,34 @@ trim_video () {
 	esac
 }
 
+convert_to_frame_sequence () {
+	if [ $# -ne 3 ]; then
+		echo "$0 [IN_FILE] [SEQUENCE_ROOT] [FRAME_RATE]"
+		return 1
+	fi
+
+	local infile="$(realpath $1)"
+	local seq_root="$(realpath $2)"
+	local framerate=$3
+	local framepattern=out%06d.png
+	
+	mkdir -p ${seq_root}
+	pushd ${seq_root} > /dev/null
+		ffmpeg -i "$infile" -vf fps=$framerate ${framepattern}
+	popd > /dev/null
+	# ffprobe -v 0 -of compact=p=0 -select_streams 0 -show_entries stream=r_frame_rate 'The Master (2012).mp4'
+}
+
+convert_from_frame_sequence () {
+	if [ $# -ne 3 ]; then
+		echo "$0 [IMG_SEQ_ROOT] [FRAME_PATTERN] [OUT_PATH]"
+		return 1
+	fi
+
+	pushd $(realpath $1)
+	ffmpeg -framerate 30 -pattern_type glob -i "$2" -c:v libx264 -pix_fmt yuv420p "$3"
+	popd
+}
 
 convert_to_frame () {
 	if [ $# -ne 3 ]; then
@@ -331,7 +391,34 @@ convert_to_wav () {
 	return $?
 }
 
+convert_to_webm () {
+	local in_file="$1"
+	local out_file="$2"
 
+	ffmpeg -i "$in_file" \
+		-c:v libvpx-vp9 -preset 4 \
+		-crf 30 -g 240 -pix_fmt yuv420p \
+		-c:a libopus \
+		"$out_file"
+}
+
+convert_to_webm_scaled () {
+	if [ $# -ne 3 ]; then
+		echo "USAGE: $0 [IN_PATH] [HEIGHT] [OUT_PATH]"
+		return 13
+	fi
+
+	local in_file="$1"
+	local h="$2"
+	local out_file="$3"
+
+	ffmpeg -i "$in_file" \
+		-c:v libvpx-vp9 -preset 4 \
+		-crf 30 -g 240 -pix_fmt yuv420p \
+		-vf scale=-1:$h \
+		-c:a libopus \
+		"$out_file"
+}
 
 # Converst input to mp4 using gpu acceleration.
 convert_to_mp4_gpu () {
@@ -353,7 +440,6 @@ convert_to_mp4_gpu () {
 
 	return $?
 }
-
 
 # Converts input file to mp4.
 convert_to_mp4_ping_pong_loop () {
@@ -400,6 +486,23 @@ convert_to_mp4 () {
 	return $?
 }
 
+# Converts input file to mp4.
+convert_to_mp4_strict () {
+	if [ $# -ne 2 ]; then
+		echo "convert_to_mp4 [IN_PATH] [OUT_PATH]"
+		return 1
+	fi
+
+	local in_file=$1
+	local out_file=$2
+
+	ffmpeg -i "$in_file" -acodec copy -c:v libx264 \
+		-pix_fmt yuv420p -profile:v main -level:v 3.1 -strict -2 \
+		"$out_file"
+
+	return $?
+}
+
 convert_to_mp4_cropped () {
 	if [ $# -ne 4 ]; then
 		echo "convert_to_mp4 [IN_PATH] [OUT_PATH] [WIDTH] [HEIGHT]"
@@ -426,12 +529,25 @@ convert_to_mp4_scaled () {
 	local out_file=$2
 	local h=$3
 
-	ffmpeg -i "$in_file" -vf scale=-1:$h -acodec copy -c:v libx264 -pix_fmt yuv420p -profile:v main -level:v 3.1 "$out_file"
+	ffmpeg -i "$in_file" -vf scale=-1:$h -acodec copy -c:v libx264 \
+		-pix_fmt yuv420p -profile:v main -level:v 3.1 \
+		"$out_file"
 }
 
-init_docker () {
-	docker-machine start default
-	eval "$(docker-machine env default)"
+convert_to_mp4_scaled_xy () {
+	if [ $# -ne 4 ]; then
+		echo "convert_to_mp4_scaled [IN_PATH] [OUT_PATH] [WIDTH] [HEIGHT]"
+		return 1
+	fi
+
+	local in_file=$1
+	local out_file=$2
+	local w=$3
+	local h=$4
+
+	ffmpeg -i "$in_file" -vf scale=$w:$h -acodec copy -c:v libx264 \
+		-pix_fmt yuv420p -profile:v main -level:v 3.1 \
+		"$out_file"
 }
 
 init_ssh () {
@@ -440,11 +556,6 @@ init_ssh () {
 			ssh-add "$HOME/.ssh/$key"
 		done
 	)
-}
-
-fix_steam_lib32 () {
-	find $HOME/.steam/root/ubuntu12_32/steam-runtime/*/usr/lib/ \
-		-name "libstdc++.so.6" -exec mv "{}" "{}.bak" \; -print
 }
 
 open_pdf () {
@@ -571,16 +682,35 @@ top_biggies () {
 }
 
 #
+top_biggies_su () {
+	local search_path="$1"
+	if ((0 == $#)); then
+		search_path=./
+	fi
+
+	sudo du -h "$search_path" | sort -rh | head -11
+}
+
+#
+git-custom-fix-lfs () {
+	if [ $# -lt 1 ]; then
+		echo "Please specify path!"
+		return
+	fi
+
+	git lfs migrate import --no-rewrite $*
+}
+
+#
 git-custom-rm-submodule () {
-	if [ $# -ne 2 ]; then
+	if [ $# -lt 1 ]; then
 		echo "Please specify submodule name!"
-		exit		
+		return
 	fi
 
 	git submodule deinit -f -- "$1"
 	rm -rf ".git/modules/$1"
 	git rm --cached "$1"
-
 }
 
 #
@@ -618,4 +748,27 @@ git-custom-exterminate () {
 	else
 		echo "Ending without rewrite."
 	fi
+}
+
+#
+git-custom-github-info () {
+	#if private
+	#curl -s -H "Authorization: token GITHUB_TOKEN" https://api.github.com/repos/torvalds/linux 
+	#else
+	local resource_path=$(echo $1 | perl -ne 'print $1 if m!([^/]+/[^/]+?)(?:\.git)?$!')
+	local api_url="https://api.github.com/repos/$resource_path"
+	local cache_path="/tmp/git-meta/${resource_path}"
+
+	mkdir -p ${cache_path}
+	
+	echo "API query at '${api_url}' ..." > /dev/stderr
+	if [ -e "${cache_path}/info.json" ]; then
+		echo "Found cached version." > /dev/stderr
+	else
+		echo "Fetching metadata for '${api_url}' ..." > /dev/stderr
+		wget -O "${cache_path}/info.json" "${api_url}" 2>&1 > /dev/null
+	fi
+
+	ls -lav "${cache_path}/info.json"
+	cat "${cache_path}/info.json"
 }
